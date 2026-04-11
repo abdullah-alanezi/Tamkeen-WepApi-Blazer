@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/BackEnd/">
+    <Project Path="Tamkeen.Application/Tamkeen.Application.csproj" />
+    <Project Path="Tamkeen.Core/Tamkeen.Core.csproj" />
+    <Project Path="Tamkeen.Domain/Tamkeen.Domain.csproj" />
+    <Project Path="Tamkeen.Infrastructure/Tamkeen.Infrastructure.csproj" />
+    <Project Path="Tamkeen.Persistence/Tamkeen.Persistence.csproj" />
+    <Project Path="Tamkeen.WebApi/Tamkeen.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/FrontEnd/">
+    <Project Path="WebClient/WebClient.csproj" />
+  </Folder>
+</Solution>
