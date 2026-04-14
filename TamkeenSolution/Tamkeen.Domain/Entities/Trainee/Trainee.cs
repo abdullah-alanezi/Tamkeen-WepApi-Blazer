@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Tamkeen.Domain.Common.BaseEntity;
 
-namespace Tamkeen.Domain.Entities
+namespace Tamkeen.Domain.Entities.Trainee
 {
     public class Trainee : BaseEntity
     {

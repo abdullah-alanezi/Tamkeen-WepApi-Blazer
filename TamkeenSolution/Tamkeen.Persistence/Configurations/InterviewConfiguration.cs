@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Tamkeen.Domain.Entities;
+using Tamkeen.Domain.Entities.Interview;
 
 namespace Tamkeen.Persistence.Configurations
 {

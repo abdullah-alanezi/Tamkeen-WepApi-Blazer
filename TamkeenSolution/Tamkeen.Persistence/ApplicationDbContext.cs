@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Tamkeen.Domain.Common.BaseEntity;
-using Tamkeen.Domain.Entities;
+using Tamkeen.Domain.Entities.Evaluations;
+using Tamkeen.Domain.Entities.Interview;
+using Tamkeen.Domain.Entities.Trainee;
 
 namespace Tamkeen.Persistence
 {

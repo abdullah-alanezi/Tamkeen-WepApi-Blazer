@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tamkeen.Core\Tamkeen.Core.csproj" />
     <ProjectReference Include="..\Tamkeen.Domain\Tamkeen.Domain.csproj" />
   </ItemGroup>
 

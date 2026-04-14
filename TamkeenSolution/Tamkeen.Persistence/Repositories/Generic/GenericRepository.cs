@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using Tamkeen.Application.Contracts;
+using Tamkeen.Application.Interfaces.Generic;
+using Tamkeen.Application.Models.PaginatedList; // تأكد من المسار الصحيح لكلاس PaginatedList
 
 namespace Tamkeen.Persistence.Repositories.Generic
 {
@@ -8,69 +11,90 @@ namespace Tamkeen.Persistence.Repositories.Generic
     {
         protected readonly ApplicationDbContext _dbContext;
         protected readonly DbSet<T> _dbSet;
+        private readonly IMapper _mapper;
 
-        public GenericRepository(ApplicationDbContext dbContext)
+        public GenericRepository(ApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _dbSet = _dbContext.Set<T>();
+            _mapper = mapper;
         }
 
-        // Add
+        public async Task<T?> FirstOrDefaultAsync(
+            Expression<Func<T, bool>>? whereCondition = null,
+            params Expression<Func<T, object>>[] navigationProperties)
+        {
+            IQueryable<T> query = _dbSet;
+
+            foreach (var navigationProperty in navigationProperties)
+                query = query.Include(navigationProperty);
+
+            if (whereCondition != null)
+                query = query.Where(whereCondition);
+
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<List<TDestination>> GetAllAsync<TDestination>(
+            Expression<Func<T, bool>>? whereCondition = null,
+            params Expression<Func<T, object>>[] navigationProperties) where TDestination : class
+        {
+            IQueryable<T> query = _dbSet;
+
+            // إضافة الـ Includes إذا لزم الأمر (غالباً ProjectTo يتكفل بها تلقائياً)
+            foreach (var navigationProperty in navigationProperties)
+                query = query.Include(navigationProperty);
+
+            if (whereCondition != null)
+                query = query.Where(whereCondition);
+
+            // استخدام ProjectTo لتحويل البيانات إلى DTO مباشرة في SQL
+            return await query.ProjectTo<TDestination>(_mapper.ConfigurationProvider)
+                              .ToListAsync();
+        }
+
+        public async Task<PaginatedList<TDestination>> GetAllPaginationAsync<TDestination>(
+            int index,
+            int pageSize = 10,
+            Expression<Func<T, bool>>? whereCondition = null) where TDestination : class
+        {
+            IQueryable<T> query = _dbSet;
+
+            if (whereCondition != null)
+                query = query.Where(whereCondition);
+
+            // حساب العدد الإجمالي قبل التجزئة
+            var count = await query.CountAsync();
+
+            // جلب بيانات الصفحة المحددة مع التحويل لـ DTO
+            var items = await query.Skip((index - 1) * pageSize)
+                                   .Take(pageSize)
+                                   .ProjectTo<TDestination>(_mapper.ConfigurationProvider)
+                                   .ToListAsync();
+
+            return new PaginatedList<TDestination>(items, count, index, pageSize);
+        }
+
         public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
         }
 
-        // Delete
-        public void Delete(T entity)
-        {
-            _dbSet.Remove(entity);
-        }
-
-        // Exists
-        public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
-        {
-            return await _dbSet.AnyAsync(predicate);
-        }
-
-        // FirstOrDefault
-        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
-        {
-            return await _dbSet.FirstOrDefaultAsync(predicate);
-        }
-
-        // Get All
-        public async Task<IReadOnlyList<T>> GetAllAsync()
-        {
-            return await _dbSet
-                .AsNoTracking()
-                .ToListAsync();
-        }
-
-        // Get All with filter
-        public async Task<IReadOnlyList<T>> GetAllAsync(Expression<Func<T, bool>> predicate)
-        {
-            return await _dbSet
-                .AsNoTracking()
-                .Where(predicate)
-                .ToListAsync();
-        }
-
-        // Get By Id
-        public async Task<T?> GetByIdAsync(int id)
-        {
-            return await _dbSet.FindAsync(id);
-        }
-
-        public async Task SaveChangesAsync()
-        {
-            await _dbContext.SaveChangesAsync();
-        }
-
-        // Update
-        public void Update(T entity)
+        public Task UpdateAsync(T entity)
         {
             _dbSet.Update(entity);
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteAsync(T entity)
+        {
+            _dbSet.Remove(entity);
+            return Task.CompletedTask;
+        }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await _dbContext.SaveChangesAsync();
         }
     }
 }

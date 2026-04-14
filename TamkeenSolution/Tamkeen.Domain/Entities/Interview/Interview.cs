@@ -1,8 +1,8 @@
-﻿
-using Tamkeen.Domain.Common.BaseEntity;
+﻿using Tamkeen.Domain.Common.BaseEntity;
+using Tamkeen.Domain.Entities.Trainee;
 using Tamkeen.Domain.Enums;
 
-namespace Tamkeen.Domain.Entities
+namespace Tamkeen.Domain.Entities.Interview
 {
     public class Interview : BaseEntity
     {

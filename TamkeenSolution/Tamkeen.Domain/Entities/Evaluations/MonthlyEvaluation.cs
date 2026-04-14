@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Tamkeen.Domain.Common.BaseEntity;
+using Tamkeen.Domain.Entities.Trainee;
 
-namespace Tamkeen.Domain.Entities
+namespace Tamkeen.Domain.Entities.Evaluations
 {
     public class MonthlyEvaluation : BaseEntity
     {

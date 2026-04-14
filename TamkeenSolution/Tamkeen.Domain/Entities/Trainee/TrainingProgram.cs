@@ -4,7 +4,7 @@ using System.Text;
 using Tamkeen.Domain.Common.BaseEntity;
 using Tamkeen.Domain.Enums;
 
-namespace Tamkeen.Domain.Entities
+namespace Tamkeen.Domain.Entities.Trainee
 {
     public class TrainingProgram : BaseEntity
     {

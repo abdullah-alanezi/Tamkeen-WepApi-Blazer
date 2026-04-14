@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using Tamkeen.Domain.Common.BaseEntity;
+using Tamkeen.Domain.Entities.Evaluations;
 using Tamkeen.Domain.Enums;
 
-namespace Tamkeen.Domain.Entities
+namespace Tamkeen.Domain.Entities.Trainee
 {
     public class TrainingApplication : BaseEntity
     {

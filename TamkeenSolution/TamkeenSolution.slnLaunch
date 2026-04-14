@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "Tamkeen.WebApi\\Tamkeen.WebApi.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "WebClient\\WebClient.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

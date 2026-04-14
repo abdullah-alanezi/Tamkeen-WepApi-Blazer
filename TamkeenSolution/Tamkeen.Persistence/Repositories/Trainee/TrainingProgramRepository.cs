@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Tamkeen.Application.Contracts.Persistence;
-using Tamkeen.Domain.Entities;
+using Tamkeen.Application.Interfaces.Trainee;
+using Tamkeen.Domain.Entities.Trainee;
 using Tamkeen.Persistence.Repositories.Generic;
-namespace Tamkeen.Persistence.Repositories
+namespace Tamkeen.Persistence.Repositories.Trainee
 {
     public class TrainingProgramRepository : GenericRepository<TrainingProgram>, ITrainingProgramRepository
     {
