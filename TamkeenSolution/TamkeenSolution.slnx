@@ -8,6 +8,7 @@
     <Project Path="Tamkeen.WebApi/Tamkeen.WebApi.csproj" />
   </Folder>
   <Folder Name="/FrontEnd/">
+    <Project Path="Tamkeen.WebInfrastructure/Tamkeen.WebInfrastructure.csproj" Id="7af15803-c5df-4f92-9eec-dcdef2968dca" />
     <Project Path="WebClient/WebClient.csproj" />
   </Folder>
 </Solution>

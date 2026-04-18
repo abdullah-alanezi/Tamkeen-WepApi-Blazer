@@ -12,6 +12,12 @@
     <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.1" PrivateAssets="all" />
+    <PackageReference Include="MudBlazor" Version="9.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tamkeen.Core\Tamkeen.Core.csproj" />
+    <ProjectReference Include="..\Tamkeen.WebInfrastructure\Tamkeen.WebInfrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

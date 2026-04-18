@@ -11,8 +11,8 @@ namespace Tamkeen.Application.Interfaces.Interview
 
         Task<bool> ScheduleInterviewAsync(InterviewDto interview);
         Task<bool> RescheduleInterviewAsync(InterviewDto interview);
-        Task<bool> CancelInterviewAsync(int id);
-        Task<InterviewDto?> GetInterviewByIdAsync(int id);
+        Task<bool> CancelInterviewAsync(Guid id);
+        Task<InterviewDto?> GetInterviewByIdAsync(Guid id);
         Task<List<InterviewDto>> GetAllInterviewsAsync();
 
     }

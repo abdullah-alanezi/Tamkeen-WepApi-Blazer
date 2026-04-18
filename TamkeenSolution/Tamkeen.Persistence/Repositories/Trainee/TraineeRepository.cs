@@ -1,61 +1,56 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Tamkeen.Application.Interfaces.Trainee;
-using Tamkeen.Domain.Entities.Trainee; // تأكد من صحة مسار الـ Entity
+using Tamkeen.Core.Models.DTOs;
+using Tamkeen.Domain.Entities.Trainee;
 using Tamkeen.Persistence.Repositories.Generic;
 
 namespace Tamkeen.Persistence.Repositories.Trainee
 {
-    public class TraineeRepository : GenericRepository<Tamkeen.Domain.Entities.Trainee.Trainee>, ITraineeRepository
+    public class TraineeRepository : GenericRepository<Domain.Entities.Trainee.Trainee>, ITraineeRepository
     {
+        private readonly IMapper _mapper;
+
         public TraineeRepository(ApplicationDbContext dbContext, IMapper mapper)
             : base(dbContext, mapper)
         {
+            _mapper = mapper;
         }
 
-        // 1. إضافة متدرب
-        public async Task<bool> AddTraineeAsync(Tamkeen.Domain.Entities.Trainee.Trainee entity)
+        public async Task<bool> AddTraineeAsync(TraineeDto entity)
         {
-            await AddAsync(entity);
-            // إرجاع true إذا تم حفظ سجل واحد على الأقل
+            var traineeEntity = _mapper.Map<Domain.Entities.Trainee.Trainee>(entity);
+            await AddAsync(traineeEntity);
             return await SaveChangesAsync() > 0;
         }
 
-        // 2. تحديث متدرب
-        public async Task<bool> UpdateTraineeAsync(Tamkeen.Domain.Entities.Trainee.Trainee entity)
+        public async Task<bool> UpdateTraineeAsync(TraineeDto entity)
         {
-            await UpdateAsync(entity);
+            var traineeEntity = _mapper.Map<Domain.Entities.Trainee.Trainee>(entity);
+            await UpdateAsync(traineeEntity);
             return await SaveChangesAsync() > 0;
         }
 
-        // 3. حذف متدرب باستخدام الـ Guid
         public async Task<bool> DeleteTraineeAsync(Guid id)
         {
-            // البحث عن العنصر أولاً للتأكد من وجوده
-            var entity = await FirstOrDefaultAsync(x => x.Id == id);
-
-            if (entity == null) return false;
-
-            await DeleteAsync(entity);
+            // ✅ تحسين الأداء: الحذف المباشر بدون قراءة أولاً
+            var trainee = new Domain.Entities.Trainee.Trainee { Id = id };
+            _dbSet.Attach(trainee);
+            _dbSet.Remove(trainee);
             return await SaveChangesAsync() > 0;
         }
 
-        // 4. جلب متدرب واحد بواسطة المعرف
-        public async Task<Tamkeen.Domain.Entities.Trainee.Trainee?> GetTraineeByIdAsync(Guid id)
+        public async Task<TraineeDto?> GetTraineeByIdAsync(Guid id)
         {
-            // نستخدم دالة الـ Generic للبحث بالشرط
-            return await FirstOrDefaultAsync(x => x.Id == id);
+            var traineeEntity = await FirstOrDefaultAsync(x => x.Id == id);
+            return traineeEntity == null ? null : _mapper.Map<TraineeDto>(traineeEntity);
         }
 
-        // 5. جلب جميع المتدربين كقائمة للقراءة فقط
-        public async Task<List<Tamkeen.Domain.Entities.Trainee.Trainee>> GetAllTraineesAsync()
+        public async Task<List<TraineeDto>> GetAllTraineesAsync()
         {
-            
-            return await GetAllAsync<Tamkeen.Domain.Entities.Trainee.Trainee>(whereCondition:null);
+            return await GetAllAsync<TraineeDto>(whereCondition: null);
         }
     }
 }

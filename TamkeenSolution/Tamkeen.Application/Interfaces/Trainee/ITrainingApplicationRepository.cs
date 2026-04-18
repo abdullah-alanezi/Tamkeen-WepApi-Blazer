@@ -12,8 +12,8 @@ namespace Tamkeen.Application.Interfaces.Trainee
 
         Task<bool> SubmitApplicationAsync(TrainingApplicationDto application);
         Task<bool> UpdateApplicationStatusAsync(TrainingApplicationDto application);
-        Task<bool> RemoveApplicationAsync(int id);
-        Task<TrainingApplicationDto?> GetApplicationDetailsAsync(int id);
+        Task<bool> RemoveApplicationAsync(Guid id);
+        Task<TrainingApplicationDto?> GetApplicationDetailsAsync(Guid id);
         Task<List<TrainingApplicationDto>> GetAllApplicationsAsync();
     }
 }

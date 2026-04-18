@@ -1,25 +1,30 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Tamkeen.Application.Interfaces.Trainee;
+using Tamkeen.Core.Models.DTOs;
 using Tamkeen.Domain.Entities.Trainee;
 using Tamkeen.Persistence.Repositories.Generic;
 namespace Tamkeen.Persistence.Repositories.Trainee
 {
     public class TrainingProgramRepository : GenericRepository<TrainingProgram>, ITrainingProgramRepository
     {
-        public TrainingProgramRepository(ApplicationDbContext dbContext)
-            : base(dbContext)
+        private readonly IMapper _mapper;
+        public TrainingProgramRepository(ApplicationDbContext dbContext,IMapper mapper)
+            : base(dbContext,mapper)
         {
+            _mapper = mapper;
         }
 
-        public async Task<bool> AddTrainingProgramAsync(TrainingProgram entity)
+        public async Task<bool> AddTrainingProgramAsync(TrainingProgramDto entity)
         {
             if (entity.StartDate < DateTime.UtcNow)
                 throw new Exception("لا يمكن إضافة برنامج بتاريخ قديم");
 
-            await AddAsync(entity);
+            var dbInsert = _mapper.Map<TrainingProgram>(entity);
 
+            await AddAsync(dbInsert);
             await SaveChangesAsync();
 
             return true;

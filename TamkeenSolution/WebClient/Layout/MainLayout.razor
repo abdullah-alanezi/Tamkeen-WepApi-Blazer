@@ -1,16 +1,52 @@
-﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+﻿@namespace WebClient.Layout
+@inherits LayoutComponentBase
+@* مكونات MudBlazor الأساسية التي يجب أن تظهر مرة واحدة في التطبيق *@
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+<MudLayout>
+    @* شريط التطبيق العلوي *@
+    <MudAppBar Elevation="1" Color="Color.Primary">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Color="Color.Inherit"
+                       Edge="Edge.Start"
+                       OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">نظام تمكين</MudText>
+        <MudSpacer />
+        @* يمكنك إضافة أيقونات إضافية هنا مثل الإشعارات أو الملف الشخصي *@
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" />
+    </MudAppBar>
 
-        <article class="content px-4">
+    @* القائمة الجانبية *@
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Always">
+        <MudNavMenu Bordered="true" Margin="Margin.Normal" Color="Color.Primary">
+            <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">القائمة الرئيسية</MudText>
+
+            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">
+                لوحة التحكم
+            </MudNavLink>
+
+            <MudNavLink Href="/trainees" Icon="@Icons.Material.Filled.People">
+                إدارة المتدربين
+            </MudNavLink>
+
+            <MudNavLink Href="/programs" Icon="@Icons.Material.Filled.Assignment">
+                البرامج التدريبية
+            </MudNavLink>
+
+            <MudDivider Class="my-2" />
+
+            <MudNavLink Href="/settings" Icon="@Icons.Material.Filled.Settings">
+                الإعدادات
+            </MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+
+    @* المحتوى الرئيسي للطلبات (Pages) *@
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-4">
             @Body
-        </article>
-    </main>
-</div>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>

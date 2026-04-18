@@ -1,43 +1,69 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Tamkeen.Application.Interfaces.Interview;
+using Tamkeen.Core.Models.DTOs;
 using Tamkeen.Persistence.Repositories.Generic;
 
 namespace Tamkeen.Persistence.Repositories.Interview
 {
     public class InterviewRepository : GenericRepository<Domain.Entities.Interview.Interview>, IInterviewRepository
     {
-        public InterviewRepository(ApplicationDbContext dbContext) : base(dbContext) { }
-
-        public async Task<bool> ScheduleInterviewAsync(Domain.Entities.Interview.Interview entity)
+        
+        private readonly IMapper _mapper;
+        public InterviewRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
-            await AddAsync(entity);
+
+            _mapper = mapper;
+        }
+        public async Task<bool> ScheduleInterviewAsync(InterviewDto entity)
+        {
+            var dbInsert = _mapper.Map<Domain.Entities.Interview.Interview>(entity);
+
+            await AddAsync(dbInsert);
             await SaveChangesAsync();
 
             return true;
         }
 
-        public async Task<bool> RescheduleInterviewAsync(Domain.Entities.Interview.Interview entity)
+        public async Task<bool> RescheduleInterviewAsync(InterviewDto entity)
         {
-            Update(entity);
+            var dbInsert = _mapper.Map<Domain.Entities.Interview.Interview>(entity);
+
+            await UpdateAsync(dbInsert);
             await SaveChangesAsync();
 
             return true;
         }
 
-        public async Task<bool> CancelInterviewAsync(int id)
+        public async Task<bool> CancelInterviewAsync(Guid id)
         {
-            var entity = await GetByIdAsync(id);
+            var entity = await FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null) return false;
-            Delete(entity);
+            await DeleteAsync(entity);
 
             await SaveChangesAsync();
 
             return true;
         }
 
-        public async Task<Domain.Entities.Interview.Interview?> GetInterviewByIdAsync(int id) => await GetByIdAsync(id);
-        public async Task<IReadOnlyList<Domain.Entities.Interview.Interview>> GetAllInterviewsAsync() => await GetAllAsync();
+        public async Task<InterviewDto?> GetInterviewByIdAsync(Guid id){
+        
+            var dbResult = await FirstOrDefaultAsync(x => x.Id == id);
+
+            if (dbResult == null) return null;
+            var response = _mapper.Map<InterviewDto>(dbResult);
+            return response;
+        }
+
+
+        public async Task<List<InterviewDto>> GetAllInterviewsAsync()
+        {
+
+            var dbResult = await GetAllAsync<InterviewDto>();
+
+            return dbResult;
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Tamkeen.Domain.Common.BaseEntity;
 using Tamkeen.Domain.Entities.Evaluations;
 using Tamkeen.Domain.Entities.Interview;
@@ -22,31 +22,33 @@ namespace Tamkeen.Persistence
         public DbSet<Interview> Interviews { get; set; }
         public DbSet<MonthlyEvaluation> MonthlyEvaluations { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder) // تم التصحيح هنا
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // هذا السطر يخبر قاعدة البيانات أن تبحث عن أي ملف Configuration 
-            // في هذا المشروع (Assembly) وتطبقه فوراً
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+            // تحديث التواريخ للكيانات التي ترث من BaseEntity
             foreach (var entry in ChangeTracker.Entries<BaseEntity>())
             {
                 switch (entry.State)
                 {
                     case EntityState.Added:
                         entry.Entity.CreatedAt = DateTime.UtcNow;
-                        // entry.Entity.CreatedBy = _currentUserService.UserId; // سنفعل هذا لاحقاً عند ربط الهوية
+                        // TODO: إضافة CreatedBy عند ربط نظام الهوية
+                        // entry.Entity.CreatedBy = _currentUserService?.UserId;
                         break;
                     case EntityState.Modified:
                         entry.Entity.LastModified = DateTime.UtcNow;
+                        // TODO: إضافة ModifiedBy عند ربط نظام الهوية
+                        // entry.Entity.ModifiedBy = _currentUserService?.UserId;
                         break;
                 }
             }
-            return base.SaveChangesAsync(cancellationToken);
+
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }

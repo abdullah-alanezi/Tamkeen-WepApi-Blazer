@@ -20,7 +20,7 @@ namespace Tamkeen.Domain.Entities.Trainee
         public TrainingProgram TrainingProgram { get; set; } = null!;
         public Trainee Trainee { get; set; } = null!;
         // داخل TrainingApplication.cs
-        public ICollection<Interview> Interviews { get; set; } = new List<Interview>();
+        public ICollection<Tamkeen.Domain.Entities.Interview.Interview> Interviews { get; set; } = new List<Tamkeen.Domain.Entities.Interview.Interview>();
         public ICollection<MonthlyEvaluation> MonthlyEvaluations { get; set; } = new List<MonthlyEvaluation>();
     }
 }

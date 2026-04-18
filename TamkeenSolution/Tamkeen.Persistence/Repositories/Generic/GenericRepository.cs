@@ -3,7 +3,7 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Tamkeen.Application.Interfaces.Generic;
-using Tamkeen.Application.Models.PaginatedList; // تأكد من المسار الصحيح لكلاس PaginatedList
+using Tamkeen.Application.Models.PaginatedList;
 
 namespace Tamkeen.Persistence.Repositories.Generic
 {
@@ -11,7 +11,7 @@ namespace Tamkeen.Persistence.Repositories.Generic
     {
         protected readonly ApplicationDbContext _dbContext;
         protected readonly DbSet<T> _dbSet;
-        private readonly IMapper _mapper;
+        protected readonly IMapper _mapper;
 
         public GenericRepository(ApplicationDbContext dbContext, IMapper mapper)
         {
@@ -26,8 +26,8 @@ namespace Tamkeen.Persistence.Repositories.Generic
         {
             IQueryable<T> query = _dbSet;
 
-            foreach (var navigationProperty in navigationProperties)
-                query = query.Include(navigationProperty);
+            foreach (var navProp in navigationProperties)
+                query = query.Include(navProp);
 
             if (whereCondition != null)
                 query = query.Where(whereCondition);
@@ -41,38 +41,43 @@ namespace Tamkeen.Persistence.Repositories.Generic
         {
             IQueryable<T> query = _dbSet;
 
-            // إضافة الـ Includes إذا لزم الأمر (غالباً ProjectTo يتكفل بها تلقائياً)
-            foreach (var navigationProperty in navigationProperties)
-                query = query.Include(navigationProperty);
+            // ✅ تحسين: الـ Includes فقط عند الحاجة (ولكن ProjectTo يستغني عنها غالباً)
+            if (navigationProperties.Any())
+            {
+                foreach (var navProp in navigationProperties)
+                    query = query.Include(navProp);
+            }
 
             if (whereCondition != null)
                 query = query.Where(whereCondition);
 
-            // استخدام ProjectTo لتحويل البيانات إلى DTO مباشرة في SQL
-            return await query.ProjectTo<TDestination>(_mapper.ConfigurationProvider)
-                              .ToListAsync();
+            return await query
+                .ProjectTo<TDestination>(_mapper.ConfigurationProvider)
+                .ToListAsync();
         }
 
         public async Task<PaginatedList<TDestination>> GetAllPaginationAsync<TDestination>(
-            int index,
+            int pageIndex,
             int pageSize = 10,
             Expression<Func<T, bool>>? whereCondition = null) where TDestination : class
         {
+            if (pageIndex < 1) pageIndex = 1;
+            if (pageSize < 1) pageSize = 10;
+
             IQueryable<T> query = _dbSet;
 
             if (whereCondition != null)
                 query = query.Where(whereCondition);
 
-            // حساب العدد الإجمالي قبل التجزئة
-            var count = await query.CountAsync();
+            var totalCount = await query.CountAsync();
 
-            // جلب بيانات الصفحة المحددة مع التحويل لـ DTO
-            var items = await query.Skip((index - 1) * pageSize)
-                                   .Take(pageSize)
-                                   .ProjectTo<TDestination>(_mapper.ConfigurationProvider)
-                                   .ToListAsync();
+            var items = await query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ProjectTo<TDestination>(_mapper.ConfigurationProvider)
+                .ToListAsync();
 
-            return new PaginatedList<TDestination>(items, count, index, pageSize);
+            return new PaginatedList<TDestination>(items, totalCount, pageIndex, pageSize);
         }
 
         public async Task AddAsync(T entity)
@@ -82,7 +87,9 @@ namespace Tamkeen.Persistence.Repositories.Generic
 
         public Task UpdateAsync(T entity)
         {
-            _dbSet.Update(entity);
+            // ✅ تصحيح: نعلق الكيان على الـ Context ونحدد حالته كـ Modified
+            _dbSet.Attach(entity);
+            _dbContext.Entry(entity).State = EntityState.Modified;
             return Task.CompletedTask;
         }
 
