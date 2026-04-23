@@ -1,6 +1,6 @@
 ﻿@page "/trainees"
 @namespace WebClient.Pages.Trainees
-@using MudBlazor
+@layout WebClient.Layout.MainLayout
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
     <MudStack Spacing="4">
@@ -27,6 +27,13 @@
 
             <ToolBarContent>
                 <MudText Typo="Typo.h6">المتدربون</MudText>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Add"
+                           OnClick="OpenAddDialog"
+                           Class="ms-4">
+                    إضافة متدرب
+                </MudButton>
                 <MudSpacer />
                 <MudTextField @bind-Value="_searchString"
                               Placeholder="بحث عن متدرب..."
@@ -69,7 +76,10 @@
                 </MudTd>
                 <MudTd DataLabel="University">@context.University</MudTd>
                 <MudTd DataLabel="Actions" Style="text-align:right">
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" Size="Size.Small" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                   Color="Color.Default"
+                                   Size="Size.Small"
+                                   OnClick="@(() => OpenEditDialog(context))" />
                     <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Info" Size="Size.Small" />
                 </MudTd>
             </RowTemplate>

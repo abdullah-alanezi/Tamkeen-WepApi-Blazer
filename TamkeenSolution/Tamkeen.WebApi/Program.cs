@@ -25,7 +25,8 @@ builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(GetTraineesListQuery).Assembly);
 });
-
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 // إعدادات CORS
 builder.Services.AddCors(options =>
 {
@@ -48,6 +49,16 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// تفعيل Swagger في بيئة التطوير
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tamkeen API V1");
+        c.RoutePrefix = "swagger"; // هذا يجعل الرابط localhost:xxxx/swagger
+    });
+}
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {

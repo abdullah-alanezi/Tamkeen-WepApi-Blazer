@@ -19,18 +19,20 @@ namespace Tamkeen.Persistence.Repositories.Trainee
             _mapper = mapper;
         }
 
-        public async Task<bool> AddTraineeAsync(TraineeDto entity)
+        public async Task<TraineeDto> AddTraineeAsync(TraineeDto entity)
         {
             var traineeEntity = _mapper.Map<Domain.Entities.Trainee.Trainee>(entity);
             await AddAsync(traineeEntity);
-            return await SaveChangesAsync() > 0;
+            await SaveChangesAsync();
+            return _mapper.Map<TraineeDto>(traineeEntity);
         }
 
-        public async Task<bool> UpdateTraineeAsync(TraineeDto entity)
+        public async Task<TraineeDto> UpdateTraineeAsync(TraineeDto entity)
         {
             var traineeEntity = _mapper.Map<Domain.Entities.Trainee.Trainee>(entity);
             await UpdateAsync(traineeEntity);
-            return await SaveChangesAsync() > 0;
+            await SaveChangesAsync();
+            return _mapper.Map<TraineeDto>(traineeEntity);
         }
 
         public async Task<bool> DeleteTraineeAsync(Guid id)

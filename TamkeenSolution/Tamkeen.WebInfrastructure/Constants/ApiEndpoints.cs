@@ -12,7 +12,7 @@
 
             public const string GetAll = $"{BasePath}/GetAll";
             public const string GetById = $"{BasePath}/GetById/{{0}}";
-            public const string Create = $"{BasePath}/Create";
+            public const string Create = $"{BasePath}/AddTrainee";
             public const string Update = $"{BasePath}/Update";
             public const string Delete = $"{BasePath}/Delete/{{0}}";
         }

@@ -1,10 +1,11 @@
 ﻿@namespace WebClient.Layout
 @inherits LayoutComponentBase
 @* مكونات MudBlazor الأساسية التي يجب أن تظهر مرة واحدة في التطبيق *@
+@* الإعداد الصحيح لـ MainLayout *@
 <MudThemeProvider />
-<MudDialogProvider />
+<MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraSmall" />
 <MudSnackbarProvider />
-
+<MudPopoverProvider />
 <MudLayout>
     @* شريط التطبيق العلوي *@
     <MudAppBar Elevation="1" Color="Color.Primary">

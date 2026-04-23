@@ -1,0 +1,78 @@
+﻿@namespace WebClient.Pages.Trainees
+@using Tamkeen.Core.Models.DTOs
+
+<MudDialog>
+    <TitleContent>
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+            <MudIcon Icon="@Icons.Material.Filled.PersonAdd" Color="Color.Success" />
+            <MudText Typo="Typo.h6">إضافة متدرب جديد</MudText>
+        </MudStack>
+    </TitleContent>
+
+    <DialogContent>
+        <MudForm @ref="_form">
+            <MudGrid Spacing="2">
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="Model.FirstName"
+                                  Label="الاسم الأول"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  RequiredError="الاسم الأول مطلوب" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="Model.LastName"
+                                  Label="الاسم الأخير"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  RequiredError="الاسم الأخير مطلوب" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Model.Email"
+                                  Label="البريد الإلكتروني"
+                                  Variant="Variant.Outlined"
+                                  InputType="InputType.Email"
+                                  Required="true" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Model.PhoneNumber"
+                                  Label="رقم الجوال"
+                                  Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="Model.University"
+                                  Label="الجامعة"
+                                  Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="Model.Major"
+                                  Label="التخصص"
+                                  Variant="Variant.Outlined" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text">إلغاء</MudButton>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="Submit">إضافة المتدرب</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudBlazor.IMudDialogInstance MudDialog { get; set; } = default!;
+
+    // ننشئ كائن جديد افتراضياً
+    private TraineeDto Model { get; set; } = new();
+    private MudForm _form = default!;
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        await _form.Validate();
+        if (_form.IsValid)
+        {
+            MudDialog.Close(DialogResult.Ok(Model));
+        }
+    }
+}
