@@ -1,4 +1,4 @@
-html, body {
+﻿html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
@@ -112,4 +112,105 @@ code {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
+}
+.tamkeen-loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* خلفية شفافة مع تأثير ضبابي */
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.loader-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loader-logo {
+    width: 120px;
+    margin-bottom: 25px;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+/* شريط تحميل مودرن بدلاً من الدائرة التقليدية */
+.loading-bar {
+    width: 200px;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, #2D5AFE, #32CCBC); /* غير الألوان حسب هويتك */
+    position: absolute;
+    animation: loading-animation 1.5s infinite ease-in-out;
+}
+
+.loader-text {
+    margin-top: 15px;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+/* حركات الأنميشن */
+@keyframes loading-animation {
+    0% {
+        left: -50%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}
+
+/* هذا الكود يضمن ظهور اللودر فوق أي Dialog أو Snackbar */
+.tamkeen-loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.4); /* شفافية */
+    backdrop-filter: blur(8px); /* تأثير الزجاج */
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000 !important; /* قيمة عالية جداً ليتفوق على MudDialog */
+    pointer-events: all; /* يمنع الضغط على أي شيء خلفه أثناء التحميل */
 }

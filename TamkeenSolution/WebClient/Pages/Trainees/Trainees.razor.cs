@@ -12,10 +12,11 @@ namespace WebClient.Pages.Trainees
         [Inject] private HttpInterceptorService Api { get; set; } = null!;
         [Inject] private IDialogService DialogService { get; set; } = null!;
         [Inject] private ISnackbar Snackbar { get; set; } = null!;
+        [Inject] private LoadingService Loader { get; set; } = null!;
 
         private string _searchString = "";
         private List<TraineeDto> _trainees = new();
-        private bool _loading = true;
+        
         private string? _errorMessage;
 
         protected override async Task OnInitializedAsync()
@@ -27,7 +28,8 @@ namespace WebClient.Pages.Trainees
         {
             try
             {
-                _loading = true;
+                Loader.Show();
+               
                 _errorMessage = null;
 
                 var apiResult = await Api.SendRequestAsync<object, Result<List<TraineeDto>>>(
@@ -49,7 +51,8 @@ namespace WebClient.Pages.Trainees
             }
             finally
             {
-                _loading = false;
+                
+                Loader.Hide();
             }
         }
 

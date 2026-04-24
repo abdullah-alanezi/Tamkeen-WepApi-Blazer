@@ -13,17 +13,19 @@ namespace Tamkeen.WebInfrastructure.Services
         private readonly HttpClient _httpClient;
         private readonly HttpClientInterceptor _interceptor;
         private readonly NavigationManager _navManager;
-
+        private readonly LoadingService _loader;
         public HttpInterceptorService(
             HttpClient httpClient,
             HttpClientInterceptor interceptor,
-            NavigationManager navManager)
+            NavigationManager navManager,
+            LoadingService loader)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _interceptor = interceptor ?? throw new ArgumentNullException(nameof(interceptor));
             _navManager = navManager ?? throw new ArgumentNullException(nameof(navManager));
 
             RegisterEvent();
+            _loader = loader;
         }
 
         public void RegisterEvent()
@@ -49,24 +51,19 @@ namespace Tamkeen.WebInfrastructure.Services
 
         // استخدام الـ Enum الخاص بك (Tamkeen.WebInfrastructure.Enums.HttpMethod)
         public async Task<Result<TResponse>> SendRequestAsync<TRequest, TResponse>(
-            MyHttpMethod method,
-            string endpoint,
-            TRequest? body = default)
+                    MyHttpMethod method,
+                    string endpoint,
+                    TRequest? body = default)
         {
             try
             {
-                // ✅ إضافة Logging
-                Console.WriteLine($"=== Sending Request ===");
-                Console.WriteLine($"Method: {method}");
-                Console.WriteLine($"Endpoint: {endpoint}");
-                Console.WriteLine($"BaseAddress: {_httpClient.BaseAddress}");
-                Console.WriteLine($"Full URL: {_httpClient.BaseAddress}{endpoint}");
+                // 3. إظهار اللودر فور بدء الطلب
+                _loader.Show();
+
+                Console.WriteLine($"=== Sending Request: {endpoint} ===");
 
                 if (string.IsNullOrWhiteSpace(endpoint))
                     return Result<TResponse>.Failure("Endpoint cannot be null or empty");
-
-                if (_httpClient == null)
-                    return Result<TResponse>.Failure("HttpClient is not initialized");
 
                 HttpResponseMessage response;
 
@@ -88,14 +85,17 @@ namespace Tamkeen.WebInfrastructure.Services
                         throw new ArgumentOutOfRangeException(nameof(method), method, null);
                 }
 
-                Console.WriteLine($"Response Status Code: {response.StatusCode}");
-
                 return await ProcessResponse<TResponse>(response);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception: {ex.Message}");
                 return Result<TResponse>.Failure($"Connection error: {ex.Message}");
+            }
+            finally
+            {
+                // 4. إخفاء اللودر دائماً عند انتهاء الطلب (نجاح أو فشل)
+                _loader.Hide();
             }
         }
 

@@ -1,50 +1,76 @@
 ﻿@namespace WebClient.Layout
 @inherits LayoutComponentBase
-@* مكونات MudBlazor الأساسية التي يجب أن تظهر مرة واحدة في التطبيق *@
-@* الإعداد الصحيح لـ MainLayout *@
+
 <MudThemeProvider />
 <MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraSmall" />
 <MudSnackbarProvider />
 <MudPopoverProvider />
-<MudLayout>
-    @* شريط التطبيق العلوي *@
+
+@* اللودر يظهر بناءً على المتغير _isLoading المعرف في الكود الخلفي *@
+@if (_isLoading)
+{
+    <MudOverlay Visible="true" DarkBackground="true">
+        <MudPaper Elevation="10"
+                  Class="pa-6 d-flex flex-column align-center justify-center"
+                  Style="border-radius:16px; min-width:220px;">
+
+            <MudAvatar Size="Size.Large" Class="mb-4">
+                <MudImage Src="Images/Logo.png" Alt="Tamkeen Logo" />
+            </MudAvatar>
+
+            <MudProgressCircular Color="Color.Primary"
+                                 Indeterminate="true"
+                                 Size="Size.Large" />
+
+            <MudText Typo="Typo.body2" Class="mt-4">
+                جاري التحميل...
+            </MudText>
+
+        </MudPaper>
+    </MudOverlay>
+}
+
+<MudLayout RightToLeft="true">
     <MudAppBar Elevation="1" Color="Color.Primary">
         <MudIconButton Icon="@Icons.Material.Filled.Menu"
                        Color="Color.Inherit"
-                       Edge="Edge.Start"
+                       Edge="Edge.End"
                        OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">نظام تمكين</MudText>
+
+        <MudImage Src="Images/Logo.png"
+                  Alt="Logo"
+                  Class="mr-2"
+                  Style="width:40px;height:40px;border-radius:8px;" />
+
+        <MudText Typo="Typo.h5" Class="mr-2">نظام تمكين</MudText>
         <MudSpacer />
-        @* يمكنك إضافة أيقونات إضافية هنا مثل الإشعارات أو الملف الشخصي *@
         <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" />
     </MudAppBar>
 
-    @* القائمة الجانبية *@
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Always">
+    <MudDrawer @bind-Open="_drawerOpen"
+               Anchor="Anchor.Right"
+               Elevation="2"
+               ClipMode="DrawerClipMode.Always">
         <MudNavMenu Bordered="true" Margin="Margin.Normal" Color="Color.Primary">
-            <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">القائمة الرئيسية</MudText>
-
+            <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="mr-4 my-3">
+                القائمة الرئيسية
+            </MudText>
             <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">
                 لوحة التحكم
             </MudNavLink>
-
             <MudNavLink Href="/trainees" Icon="@Icons.Material.Filled.People">
                 إدارة المتدربين
             </MudNavLink>
-
             <MudNavLink Href="/programs" Icon="@Icons.Material.Filled.Assignment">
                 البرامج التدريبية
             </MudNavLink>
-
             <MudDivider Class="my-2" />
-
             <MudNavLink Href="/settings" Icon="@Icons.Material.Filled.Settings">
                 الإعدادات
             </MudNavLink>
         </MudNavMenu>
     </MudDrawer>
 
-    @* المحتوى الرئيسي للطلبات (Pages) *@
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-4">
             @Body

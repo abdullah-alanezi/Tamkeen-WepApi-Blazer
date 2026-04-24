@@ -19,6 +19,11 @@ builder.Services.AddScoped(sp =>
     return httpClient;
 });
 
+builder.Services.AddScoped<LoadingService>();
+builder.Services.AddTransient<LoadingHandler>();
+builder.Services.AddHttpClient("ServerAPI", client => client.BaseAddress = new Uri("..."))
+       .AddHttpMessageHandler<LoadingHandler>();
+
 builder.Services.AddScoped<HttpInterceptorService>();
 builder.Services.AddMudServices();
 
