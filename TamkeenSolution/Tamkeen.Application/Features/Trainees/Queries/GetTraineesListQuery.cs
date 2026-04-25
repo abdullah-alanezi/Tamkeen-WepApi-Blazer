@@ -5,40 +5,37 @@ using System.Text;
 using Tamkeen.Application.Interfaces.Trainee;
 using Tamkeen.Application.Models.PaginatedList;
 using Tamkeen.Core.Common;
-using Tamkeen.Core.Models.DTOs;
+
+using Tamkeen.Core.Models.Trainee.Response;
 
 namespace Tamkeen.Application.Features.Trainees.Queries
 {
-    public class GetTraineesListQuery : IRequest<Result<List<TraineeDto>>>
+    public class GetTraineesListQuery
+        : IRequest<Result<List<TraineeResponse>>>
     {
-
     }
 
-    public class GetTraineesListHandler : IRequestHandler<GetTraineesListQuery, Result<List<TraineeDto>>>
+    public class GetTraineesListHandler
+        : IRequestHandler<GetTraineesListQuery, Result<List<TraineeResponse>>>
     {
-        private readonly ITraineeRepository _traineeRepository;
+        private readonly ITraineeRepository _repo;
 
-        public GetTraineesListHandler(ITraineeRepository traineeRepository)
+        public GetTraineesListHandler(ITraineeRepository repo)
         {
-            _traineeRepository = traineeRepository;
+            _repo = repo;
         }
 
-        public async Task<Result<List<TraineeDto>>> Handle(GetTraineesListQuery request, CancellationToken cancellationToken)
+        public async Task<Result<List<TraineeResponse>>> Handle(GetTraineesListQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                var data = await _traineeRepository.GetAllTraineesAsync();
-
-                // إرجاع نتيجة ناجحة
-                return Result<List<TraineeDto>>.Success(data);
+                var data = await _repo.GetAllTraineesAsync();
+                return Result<List<TraineeResponse>>.Success(data);
             }
             catch (Exception ex)
             {
-                // إرجاع فشل مع رسالة الخطأ
-                return Result<List<TraineeDto>>.Failure("حدث خطأ أثناء جلب البيانات: " + ex.Message);
+                return Result<List<TraineeResponse>>.Failure(ex.Message);
             }
         }
-
-
     }
 }

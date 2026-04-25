@@ -5,36 +5,38 @@ using System.Collections.Generic;
 using System.Text;
 using Tamkeen.Application.Interfaces.Trainee;
 using Tamkeen.Core.Common;
-using Tamkeen.Core.Models.DTOs;
+
+using Tamkeen.Core.Models.Trainee.Request;
+using Tamkeen.Core.Models.Trainee.Response;
 using Tamkeen.Domain.Entities.Trainee;
 
 namespace Tamkeen.Application.Features.Trainees.Commands
 {
-    public class AddTraineeCommand : TraineeDto, IRequest<Result<TraineeDto>>
+    public class AddTraineeCommand : TraineeCreateDto, IRequest<Result<TraineeResponse>>
     {
-
-        
-        
     }
 
-    public class AddTraineeCommandHandler : IRequestHandler<AddTraineeCommand, Result<TraineeDto>>
+    public class AddTraineeCommandHandler
+        : IRequestHandler<AddTraineeCommand, Result<TraineeResponse>>
     {
-        private readonly IMapper _mapper;
+        private readonly ITraineeRepository _repo;
 
-        private readonly ITraineeRepository _traineeRepository;
-
-        public AddTraineeCommandHandler(ITraineeRepository traineeRepository, IMapper mapper)
+        public AddTraineeCommandHandler(ITraineeRepository repo)
         {
-            _traineeRepository = traineeRepository;
-            _mapper = mapper;
+            _repo = repo;
         }
-        public async Task<Result<TraineeDto>> Handle(AddTraineeCommand request, CancellationToken cancellationToken)
+
+        public async Task<Result<TraineeResponse>> Handle(AddTraineeCommand request, CancellationToken cancellationToken)
         {
-            
-
-            return Result<TraineeDto>.Success(await _traineeRepository.AddTraineeAsync(_mapper.Map<TraineeDto>(request)));
-             
-
+            try
+            {
+                var result = await _repo.AddTraineeAsync(request);
+                return Result<TraineeResponse>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Result<TraineeResponse>.Failure(ex.Message);
+            }
         }
     }
 }

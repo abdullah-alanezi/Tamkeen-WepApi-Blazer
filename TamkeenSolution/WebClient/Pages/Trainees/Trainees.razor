@@ -1,7 +1,7 @@
 ﻿@page "/trainees"
-@namespace WebClient.Pages.Trainees
+
 @layout WebClient.Layout.MainLayout
-@using Tamkeen.Core.Models.DTOs
+@using Tamkeen.Core.Models.Trainee.Response
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
 
@@ -24,12 +24,11 @@
                     </MudText>
                 </MudStack>
 
-                <!-- ✅ FIX: MudChip requires T -->
-                <MudChip T="string"
+                <MudChip T="int"
                          Color="Color.Surface"
                          Variant="Variant.Filled"
                          Size="Size.Large">
-                    إجمالي العدد: @_trainees.Count
+                    إجمالي العدد: @_trainees?.Count ?? 0
                 </MudChip>
 
             </MudStack>
@@ -37,7 +36,7 @@
 
         <!-- ================= TABLE ================= -->
         <MudTable Items="@_trainees"
-                  T="TraineeDto"
+                  T="TraineeResponse"
                   Hover="true"
                   Striped="true"
                   Elevation="4"
@@ -60,7 +59,7 @@
                 <MudSpacer />
 
                 <MudTextField @bind-Value="_searchString"
-                              Placeholder="بحث عن متدرب..."
+                              Placeholder="بحث..."
                               Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search"
                               Clearable="true" />
@@ -80,10 +79,10 @@
             <RowTemplate>
 
                 <MudTd DataLabel="Name">
-                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
 
                         <MudAvatar Color="Color.Primary" Variant="Variant.Filled">
-                            @context.FirstName?.FirstOrDefault()
+                            @GetInitials(context.FullName)
                         </MudAvatar>
 
                         <MudStack Spacing="0">
@@ -107,7 +106,6 @@
                     </MudLink>
                 </MudTd>
 
-                <!-- ✅ FIX: MudChip -->
                 <MudTd>
                     <MudChip T="string"
                              Size="Size.Small"
@@ -126,18 +124,14 @@
                                    Size="Size.Small"
                                    OnClick="@(() => OpenEditDialog(context))" />
 
-                    <MudIconButton Icon="@Icons.Material.Filled.Visibility"
-                                   Color="Color.Info"
-                                   Size="Size.Small" />
-
                 </MudTd>
 
             </RowTemplate>
 
-            <!-- NO DATA -->
+            <!-- EMPTY -->
             <NoRecordsContent>
                 <MudText Align="Align.Center" Class="pa-4">
-                    لا توجد سجلات مطابقة للبحث
+                    لا توجد بيانات
                 </MudText>
             </NoRecordsContent>
 
@@ -158,9 +152,7 @@
         <!-- ================= ERROR ================= -->
         @if (!string.IsNullOrEmpty(_errorMessage))
         {
-            <MudAlert Severity="Severity.Error"
-                      Variant="Variant.Filled"
-                      Class="mt-4">
+            <MudAlert Severity="Severity.Error" Variant="Variant.Filled">
                 @_errorMessage
             </MudAlert>
         }

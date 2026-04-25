@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Tamkeen.Domain.Common.BaseEntity;
+using Tamkeen.Core.Models.BaseDto;
 
-namespace Tamkeen.Domain.Entities.Trainee
+namespace Tamkeen.Core.Models.Trainee.Request
 {
-    public class Trainee : BaseEntity
+    public class TraineeCreateDto: BaseDTOs
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
@@ -17,12 +17,6 @@ namespace Tamkeen.Domain.Entities.Trainee
         public string Major { get; set; } = string.Empty;
 
         public string? ResumeUrl { get; set; }
-
         public string UserSSN { get; set; } = string.Empty;
-
-        public string? IdentityUserId { get; set; }
-
-        public ICollection<TrainingApplication> Applications { get; set; }
-            = new List<TrainingApplication>();
     }
 }

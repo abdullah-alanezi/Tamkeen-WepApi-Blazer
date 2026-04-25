@@ -23,6 +23,7 @@ namespace Tamkeen.Persistence.Migrations
                     University = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Major = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ResumeUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserSSN = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     IdentityUserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -82,7 +83,7 @@ namespace Tamkeen.Persistence.Migrations
                         column: x => x.TraineeId,
                         principalTable: "Trainees",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TrainingApplications_TrainingPrograms_TrainingProgramId",
                         column: x => x.TrainingProgramId,

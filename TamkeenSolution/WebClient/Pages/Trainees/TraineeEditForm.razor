@@ -1,5 +1,5 @@
-﻿@namespace WebClient.Pages.Trainees
-@using Tamkeen.Core.Models.DTOs
+﻿
+@using Tamkeen.Core.Models.Trainee.Request
 
 <MudDialog>
     <TitleContent>
@@ -10,68 +10,58 @@
     </TitleContent>
 
     <DialogContent>
-        <MudContainer Style="max-height: 450px; overflow-y: scroll">
+        <MudContainer Style="max-height: 450px; overflow-y: auto">
+
             <MudGrid Spacing="2">
+
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="Model.FirstName"
-                                  Label="الاسم الأول"
-                                  Variant="Variant.Outlined"
-                                  Margin="Margin.Dense"
-                                  Required="true" />
+                    <MudTextField @bind-Value="Model.FirstName" Label="الاسم الأول" />
                 </MudItem>
+
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="Model.LastName"
-                                  Label="الاسم الأخير"
-                                  Variant="Variant.Outlined"
-                                  Margin="Margin.Dense"
-                                  Required="true" />
+                    <MudTextField @bind-Value="Model.LastName" Label="الاسم الأخير" />
                 </MudItem>
+
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="Model.Email"
-                                  Label="البريد الإلكتروني"
-                                  Variant="Variant.Outlined"
-                                  Margin="Margin.Dense"
-                                  InputType="InputType.Email" />
+                    <MudTextField @bind-Value="Model.Email" Label="البريد الإلكتروني" />
                 </MudItem>
+
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="Model.PhoneNumber"
-                                  Label="رقم الجوال"
-                                  Variant="Variant.Outlined"
-                                  Margin="Margin.Dense" />
+                    <MudTextField @bind-Value="Model.PhoneNumber" Label="رقم الجوال" />
                 </MudItem>
+
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="Model.University"
-                                  Label="الجامعة"
-                                  Variant="Variant.Outlined"
-                                  Margin="Margin.Dense" />
+                    <MudTextField @bind-Value="Model.University" Label="الجامعة" />
                 </MudItem>
+
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="Model.Major"
-                                  Label="التخصص"
-                                  Variant="Variant.Outlined"
-                                  Margin="Margin.Dense" />
+                    <MudTextField @bind-Value="Model.Major" Label="التخصص" />
                 </MudItem>
+
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Model.UserSSN" Label="رقم الهوية" />
+                </MudItem>
+
             </MudGrid>
+
         </MudContainer>
     </DialogContent>
 
     <DialogActions>
-        <MudButton OnClick="Cancel" Variant="Variant.Text" Color="Color.Default" Class="px-6">إلغاء</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit" Class="px-10">حفظ التغييرات</MudButton>
+        <MudButton OnClick="Cancel">إلغاء</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">حفظ</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
-    [CascadingParameter]
-    IMudDialogInstance MudDialog { get; set; } = default!;
-    [Parameter]
-    public TraineeDto Model { get; set; } = new();
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public TraineeCreateDto Model { get; set; } = new();
 
     private void Cancel() => MudDialog.Cancel();
 
     private void Submit()
     {
-        // هنا يمكنك إضافة منطق التحقق (Validation) قبل الإغلاق إذا أردت
         MudDialog.Close(DialogResult.Ok(Model));
     }
 }

@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
-using Tamkeen.Core.Models.DTOs;
+using Tamkeen.Core.Models.Trainee.Request;
+using Tamkeen.Core.Models.Trainee.Response;
+using Tamkeen.Core.Models.TrainingApplication.Request;
+using Tamkeen.Core.Models.TrainingApplication.Response;
 using Tamkeen.Domain.Entities.Trainee;
 
 namespace Tamkeen.Application.Models.MappingProfile.ApplicationMapping
@@ -8,13 +11,31 @@ namespace Tamkeen.Application.Models.MappingProfile.ApplicationMapping
     {
         public TrainingApplicationProfile()
         {
-            CreateMap<TrainingApplication, TrainingApplicationDto>()
-                // جلب اسم المتدرب من علاقة الـ Navigation Property
-                .ForMember(dest => dest.TraineeName, opt => opt.MapFrom(src => $"{src.Trainee.FirstName} {src.Trainee.LastName}"))
-                // جلب عنوان البرنامج من علاقة الـ Navigation Property
-                .ForMember(dest => dest.ProgramTitle, opt => opt.MapFrom(src => src.TrainingProgram.Title))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-                .ReverseMap();
+            // =========================
+            // ENTITY -> RESPONSE
+            // =========================
+            CreateMap<TrainingApplication, TrainingApplicationResponse>()
+                .ForMember(dest => dest.TraineeName,
+                    opt => opt.MapFrom(src =>
+                        src.Trainee != null
+                            ? src.Trainee.FirstName + " " + src.Trainee.LastName
+                            : string.Empty))
+
+                .ForMember(dest => dest.ProgramTitle,
+                    opt => opt.MapFrom(src =>
+                        src.TrainingProgram != null
+                            ? src.TrainingProgram.Title
+                            : string.Empty))
+
+                .ForMember(dest => dest.Status,
+                    opt => opt.MapFrom(src => src.Status));
+
+            // =========================
+            // REQUEST -> ENTITY (CREATE)
+            // =========================
+            CreateMap<TrainingApplicationCreateDto, TrainingApplication>();
+
+            // ❌ لا ReverseMap هنا
         }
     }
 }

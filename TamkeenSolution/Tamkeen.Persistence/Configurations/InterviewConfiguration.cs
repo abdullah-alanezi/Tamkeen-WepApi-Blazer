@@ -25,11 +25,11 @@ namespace Tamkeen.Persistence.Configurations
             builder.Property(x => x.Feedback)
                 .HasMaxLength(2000);
 
-            // إعداد العلاقة: الطلب الواحد يمكن أن يمر بعدة مقابلات (مثلاً مقابلة تقنية ثم HR)
             builder.HasOne(x => x.TrainingApplication)
                 .WithMany(x => x.Interviews)
                 .HasForeignKey(x => x.TrainingApplicationId)
                 .OnDelete(DeleteBehavior.Cascade);
+            // ✔ هنا OK لأن المقابلة تعتمد على الطلب
         }
     }
 }

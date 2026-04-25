@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
-using Tamkeen.Core.Models.DTOs;
-
+using Tamkeen.Core.Models.TrainingProgram.Request;
+using Tamkeen.Core.Models.TrainingProgram.Response;
 using Tamkeen.Domain.Entities.Trainee;
+using Tamkeen.Domain.Enums;
 
 namespace Tamkeen.Application.Models.MappingProfile.ProgramMapping
 {
@@ -9,10 +10,22 @@ namespace Tamkeen.Application.Models.MappingProfile.ProgramMapping
     {
         public TrainingProgramProfile()
         {
-            CreateMap<TrainingProgram, TrainingProgramDto>()
-                // تحويل الـ Enum إلى String لسهولة العرض في Blazor
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-                .ReverseMap();
+            // =========================
+            // ENTITY -> RESPONSE
+            // =========================
+            CreateMap<TrainingProgram, TrainingProgramResponse>()
+                .ForMember(dest => dest.Status,
+                    opt => opt.MapFrom(src => src.Status))
+
+                .ForMember(dest => dest.ApplicationsCount,
+                    opt => opt.MapFrom(src => src.Applications.Count));
+
+            // =========================
+            // REQUEST -> ENTITY
+            // =========================
+            CreateMap<TrainingProgramCreateDto, TrainingProgram>();
+
+            // ❌ لا ReverseMap
         }
     }
 }

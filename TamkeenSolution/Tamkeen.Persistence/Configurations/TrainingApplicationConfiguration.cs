@@ -13,13 +13,18 @@ namespace Tamkeen.Persistence.Configurations
         {
             builder.HasKey(x => x.Id);
 
-            // منع حذف المتدرب إذا كان لديه طلب تقديم نشط
-            builder.HasOne(x => x.Trainee)
-                .WithMany(x => x.AppliedPrograms)
-                .HasForeignKey(x => x.TraineeId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(x => x.HRFeedback)
+                .HasMaxLength(1000);
 
-            builder.Property(x => x.HRFeedback).HasMaxLength(1000);
+            builder.HasOne(x => x.Trainee)
+                .WithMany(x => x.Applications)
+                .HasForeignKey(x => x.TraineeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.TrainingProgram)
+                .WithMany(x => x.Applications)
+                .HasForeignKey(x => x.TrainingProgramId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Tamkeen.Application.Features.Trainees.Commands;
 using Tamkeen.Application.Features.Trainees.Queries;
-using Tamkeen.Core.Models.DTOs; // تأكد من المسار الصحيح للـ Query
 
 namespace Tamkeen.WebApi.Controllers.Trainee
 {
@@ -23,32 +22,23 @@ namespace Tamkeen.WebApi.Controllers.Trainee
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            // إرسال الطلب لـ MediatR
             var result = await _mediator.Send(new GetTraineesListQuery());
 
-            if (result.IsSuccess)
-            {
-                // نرجع البيانات الموجودة داخل الـ Result
-                return Ok(result);
-            }
-
-            // في حال الفشل، نرجع رسالة الخطأ مع كود 400
-            return BadRequest(result.ErrorMessage);
+            return result.IsSuccess
+                ? Ok(result)
+                : BadRequest(result.ErrorMessage);
         }
 
 
 
         [HttpPost]
-        public async Task<IActionResult> AddTrainee(TraineeDto trainee)
+        public async Task<IActionResult> AddTrainee(AddTraineeCommand command)
         {
-            var command = _mapper.Map<AddTraineeCommand>(trainee);
-
             var result = await _mediator.Send(command);
 
-            if (result.IsSuccess)
-                return Ok(result);
-
-            return BadRequest(result);
+            return result.IsSuccess
+                ? Ok(result)
+                : BadRequest(result.ErrorMessage);
         }
 
     }

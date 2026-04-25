@@ -1,69 +1,86 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Tamkeen.Application.Interfaces.Interview;
-using Tamkeen.Core.Models.DTOs;
+using Tamkeen.Core.Models.Interview.Request;
+using Tamkeen.Core.Models.Interview.Response;
+using Tamkeen.Domain.Entities.Interview;
+using Tamkeen.Domain.Enums;
 using Tamkeen.Persistence.Repositories.Generic;
 
 namespace Tamkeen.Persistence.Repositories.Interview
 {
-    public class InterviewRepository : GenericRepository<Domain.Entities.Interview.Interview>, IInterviewRepository
+    public class InterviewRepository
+        : GenericRepository<Tamkeen.Domain.Entities.Interview.Interview>, IInterviewRepository
     {
-        
         private readonly IMapper _mapper;
-        public InterviewRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
-        {
 
+        public InterviewRepository(ApplicationDbContext dbContext, IMapper mapper)
+            : base(dbContext, mapper)
+        {
             _mapper = mapper;
         }
-        public async Task<bool> ScheduleInterviewAsync(InterviewDto entity)
-        {
-            var dbInsert = _mapper.Map<Domain.Entities.Interview.Interview>(entity);
 
-            await AddAsync(dbInsert);
+        // 🟢 Schedule Interview
+        public async Task<InterviewResponse> ScheduleAsync(InterviewCreateDto dto)
+        {
+            var entity = _mapper.Map<Tamkeen.Domain.Entities.Interview.Interview>(dto);
+
+            entity.Status = InterviewStatus.Scheduled;
+
+            await AddAsync(entity);
             await SaveChangesAsync();
 
-            return true;
+            return _mapper.Map<InterviewResponse>(entity);
         }
 
-        public async Task<bool> RescheduleInterviewAsync(InterviewDto entity)
+        // 🟡 Reschedule Interview
+        public async Task<InterviewResponse> RescheduleAsync(InterviewCreateDto dto)
         {
-            var dbInsert = _mapper.Map<Domain.Entities.Interview.Interview>(entity);
+            var entity = await FirstOrDefaultAsync(x => x.Id == dto.Id);
 
-            await UpdateAsync(dbInsert);
+            if (entity == null)
+                throw new Exception("Interview not found");
+
+            entity.ScheduledOn = dto.ScheduledOn;
+            entity.Location = dto.Location;
+            entity.MeetingLink = dto.MeetingLink;
+            entity.InterviewerName = dto.InterviewerName;
+
+            entity.Status = InterviewStatus.Scheduled;
+
+            await UpdateAsync(entity);
             await SaveChangesAsync();
 
-            return true;
+            return _mapper.Map<InterviewResponse>(entity);
         }
 
-        public async Task<bool> CancelInterviewAsync(Guid id)
+        // 🔴 Cancel Interview
+        public async Task<bool> CancelAsync(Guid id)
         {
             var entity = await FirstOrDefaultAsync(x => x.Id == id);
-            if (entity == null) return false;
-            await DeleteAsync(entity);
 
-            await SaveChangesAsync();
+            if (entity == null)
+                return false;
 
-            return true;
+            entity.Status = InterviewStatus.Canceled;
+
+            await UpdateAsync(entity);
+            return await SaveChangesAsync() > 0;
         }
 
-        public async Task<InterviewDto?> GetInterviewByIdAsync(Guid id){
-        
-            var dbResult = await FirstOrDefaultAsync(x => x.Id == id);
-
-            if (dbResult == null) return null;
-            var response = _mapper.Map<InterviewDto>(dbResult);
-            return response;
-        }
-
-
-        public async Task<List<InterviewDto>> GetAllInterviewsAsync()
+        // 🔵 Get By ID
+        public async Task<InterviewResponse?> GetByIdAsync(Guid id)
         {
+            var entity = await FirstOrDefaultAsync(x => x.Id == id);
 
-            var dbResult = await GetAllAsync<InterviewDto>();
+            return entity == null
+                ? null
+                : _mapper.Map<InterviewResponse>(entity);
+        }
 
-            return dbResult;
+        // 🟣 Get All
+        public async Task<List<InterviewResponse>> GetAllAsync()
+        {
+            return await GetAllAsync<InterviewResponse>();
         }
     }
 }

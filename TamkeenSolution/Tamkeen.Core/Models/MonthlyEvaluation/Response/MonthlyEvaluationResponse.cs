@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Tamkeen.Domain.Common.BaseEntity;
-using Tamkeen.Domain.Entities.Trainee;
 
-namespace Tamkeen.Domain.Entities.Evaluations
+namespace Tamkeen.Core.Models.MonthlyEvaluation.Response
 {
-    public class MonthlyEvaluation : BaseEntity
+    public class MonthlyEvaluationResponse
     {
-        public Guid TrainingApplicationId { get; set; }
-
+        public Guid Id { get; set; }
+        public string TraineeName { get; set; } = string.Empty;
         public int Month { get; set; }
         public int Year { get; set; }
-
+        public string ProgramTitle { get; set; } = string.Empty;
         public int AttendanceGrade { get; set; }
         public int PerformanceGrade { get; set; }
 
         public string? Comments { get; set; }
-
-        public TrainingApplication TrainingApplication { get; set; } = null!;
     }
 }

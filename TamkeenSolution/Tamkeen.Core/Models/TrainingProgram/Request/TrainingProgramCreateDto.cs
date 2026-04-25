@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Tamkeen.Domain.Common.BaseEntity;
-using Tamkeen.Domain.Enums;
+using Tamkeen.Core.Models.BaseDto;
 
-namespace Tamkeen.Domain.Entities.Trainee
+namespace Tamkeen.Core.Models.TrainingProgram.Request
 {
-    public class TrainingProgram : BaseEntity
+    public class TrainingProgramCreateDto: BaseDTOs
     {
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
@@ -18,10 +17,5 @@ namespace Tamkeen.Domain.Entities.Trainee
         public DateTime EndDate { get; set; }
 
         public int Capacity { get; set; }
-
-        public TrainingProgramStatus Status { get; set; }
-
-        public ICollection<TrainingApplication> Applications { get; set; }
-            = new List<TrainingApplication>();
     }
 }

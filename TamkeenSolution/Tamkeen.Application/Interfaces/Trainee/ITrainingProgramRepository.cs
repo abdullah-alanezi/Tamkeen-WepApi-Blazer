@@ -1,10 +1,18 @@
-﻿using Tamkeen.Core.Models.DTOs;
+﻿
+using Tamkeen.Core.Models.TrainingProgram.Request;
+using Tamkeen.Core.Models.TrainingProgram.Response;
 using Tamkeen.Domain.Entities.Trainee;
 
 namespace Tamkeen.Application.Interfaces.Trainee
 {
     public interface ITrainingProgramRepository
     {
-        Task<bool> AddTrainingProgramAsync(TrainingProgramDto trainingProgram);
+        Task<TrainingProgramResponse> AddAsync(TrainingProgramCreateDto dto);
+
+        Task<TrainingProgramResponse?> GetByIdAsync(Guid id);
+
+        Task<List<TrainingProgramResponse>> GetAllAsync();
+
+        Task<bool> DeleteAsync(Guid id);
     }
 }

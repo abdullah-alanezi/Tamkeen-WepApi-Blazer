@@ -1,15 +1,14 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Tamkeen.Application.Interfaces.Trainee;
-using Tamkeen.Core.Models.DTOs;
+using Tamkeen.Core.Models.Trainee.Request;
+using Tamkeen.Core.Models.Trainee.Response;
 using Tamkeen.Domain.Entities.Trainee;
 using Tamkeen.Persistence.Repositories.Generic;
 
 namespace Tamkeen.Persistence.Repositories.Trainee
 {
-    public class TraineeRepository : GenericRepository<Domain.Entities.Trainee.Trainee>, ITraineeRepository
+    public class TraineeRepository
+        : GenericRepository<Domain.Entities.Trainee.Trainee>, ITraineeRepository
     {
         private readonly IMapper _mapper;
 
@@ -19,40 +18,53 @@ namespace Tamkeen.Persistence.Repositories.Trainee
             _mapper = mapper;
         }
 
-        public async Task<TraineeDto> AddTraineeAsync(TraineeDto entity)
+        // 🟢 ADD
+        public async Task<TraineeResponse> AddTraineeAsync(TraineeCreateDto dto)
         {
-            var traineeEntity = _mapper.Map<Domain.Entities.Trainee.Trainee>(entity);
-            await AddAsync(traineeEntity);
+            var entity = _mapper.Map< Tamkeen.Domain.Entities.Trainee.Trainee >(dto);
+
+            await AddAsync(entity);
             await SaveChangesAsync();
-            return _mapper.Map<TraineeDto>(traineeEntity);
+
+            return _mapper.Map<TraineeResponse>(entity);
         }
 
-        public async Task<TraineeDto> UpdateTraineeAsync(TraineeDto entity)
+        // 🟡 UPDATE
+        public async Task<TraineeResponse> UpdateTraineeAsync(TraineeCreateDto dto)
         {
-            var traineeEntity = _mapper.Map<Domain.Entities.Trainee.Trainee>(entity);
-            await UpdateAsync(traineeEntity);
+            var entity = _mapper.Map< Tamkeen.Domain.Entities.Trainee.Trainee >(dto);
+
+            await UpdateAsync(entity);
             await SaveChangesAsync();
-            return _mapper.Map<TraineeDto>(traineeEntity);
+
+            return _mapper.Map<TraineeResponse>(entity);
         }
 
+        // 🔴 DELETE
         public async Task<bool> DeleteTraineeAsync(Guid id)
         {
-            // ✅ تحسين الأداء: الحذف المباشر بدون قراءة أولاً
-            var trainee = new Domain.Entities.Trainee.Trainee { Id = id };
-            _dbSet.Attach(trainee);
-            _dbSet.Remove(trainee);
+            var entity = new Tamkeen.Domain.Entities.Trainee.Trainee { Id = id };
+
+            _dbSet.Attach(entity);
+            _dbSet.Remove(entity);
+
             return await SaveChangesAsync() > 0;
         }
 
-        public async Task<TraineeDto?> GetTraineeByIdAsync(Guid id)
+        // 🔵 GET BY ID
+        public async Task<TraineeResponse?> GetTraineeByIdAsync(Guid id)
         {
-            var traineeEntity = await FirstOrDefaultAsync(x => x.Id == id);
-            return traineeEntity == null ? null : _mapper.Map<TraineeDto>(traineeEntity);
+            var entity = await FirstOrDefaultAsync(x => x.Id == id);
+
+            return entity == null
+                ? null
+                : _mapper.Map<TraineeResponse>(entity);
         }
 
-        public async Task<List<TraineeDto>> GetAllTraineesAsync()
+        // 🟣 GET ALL (أفضل استخدام GenericRepository)
+        public async Task<List<TraineeResponse>> GetAllTraineesAsync()
         {
-            return await GetAllAsync<TraineeDto>(whereCondition: null);
+            return await GetAllAsync<TraineeResponse>();
         }
     }
 }

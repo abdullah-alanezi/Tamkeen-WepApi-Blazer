@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Tamkeen.Core.Common;
-using Tamkeen.Core.Models.DTOs;
+using Tamkeen.Core.Models.Trainee.Request;
+using Tamkeen.Core.Models.Trainee.Response;
 using Tamkeen.WebInfrastructure.Constants;
 using Tamkeen.WebInfrastructure.Services;
 using Tamkeen.WebInfrastructure.Enums;
@@ -16,9 +17,12 @@ namespace WebClient.Pages.Trainees
         [Inject] private LoadingService Loader { get; set; } = null!;
 
         private string _searchString = "";
-        private List<TraineeDto> _trainees = new();
+        private List<TraineeResponse> _trainees = new();
         private string? _errorMessage;
 
+        // =========================
+        // INIT
+        // =========================
         protected override async Task OnInitializedAsync()
         {
             await LoadTrainees();
@@ -34,7 +38,7 @@ namespace WebClient.Pages.Trainees
                 Loader.Show();
                 _errorMessage = null;
 
-                var apiResult = await Api.SendRequestAsync<object, Result<List<TraineeDto>>>(
+                var apiResult = await Api.SendRequestAsync<object, Result<List<TraineeResponse>>>(
                     MyHttpMethod.GET,
                     ApiEndpoints.Trainees.GetAll);
 
@@ -51,7 +55,7 @@ namespace WebClient.Pages.Trainees
             }
             catch (Exception ex)
             {
-                _errorMessage = $"خطأ: {ex.Message}";
+                _errorMessage = ex.Message;
             }
             finally
             {
@@ -60,37 +64,36 @@ namespace WebClient.Pages.Trainees
         }
 
         // =========================
-        // ADD
+        // CREATE
         // =========================
         private async Task OpenAddDialog()
         {
             var options = new DialogOptions
             {
                 CloseButton = true,
-                MaxWidth = MaxWidth.Small,
-                FullWidth = true
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small
             };
 
             var dialog = await DialogService.ShowAsync<TraineeCreateForm>(
                 "إضافة متدرب",
-                options
-            );
+                options);
 
             var result = await dialog.Result;
 
-            if (!result.Canceled && result.Data is TraineeDto newTrainee)
+            if (!result.Canceled && result.Data is TraineeCreateDto model)
             {
-                await CreateTrainee(newTrainee);
+                await CreateTrainee(model);
             }
         }
 
-        private async Task CreateTrainee(TraineeDto model)
+        private async Task CreateTrainee(TraineeCreateDto model)
         {
             try
             {
                 Loader.Show();
 
-                var apiResult = await Api.SendRequestAsync<TraineeDto, Result<TraineeDto>>(
+                var apiResult = await Api.SendRequestAsync<TraineeCreateDto, Result<TraineeResponse>>(
                     MyHttpMethod.POST,
                     ApiEndpoints.Trainees.Create,
                     model);
@@ -107,7 +110,7 @@ namespace WebClient.Pages.Trainees
             }
             catch (Exception ex)
             {
-                Snackbar.Add($"خطأ: {ex.Message}", Severity.Error);
+                Snackbar.Add(ex.Message, Severity.Error);
             }
             finally
             {
@@ -118,57 +121,72 @@ namespace WebClient.Pages.Trainees
         // =========================
         // EDIT
         // =========================
-        private async Task OpenEditDialog(TraineeDto trainee)
+        private async Task OpenEditDialog(TraineeResponse trainee)
         {
             var parameters = new DialogParameters
             {
-                ["Model"] = new TraineeDto
+                ["Model"] = new TraineeCreateDto
                 {
-                    Id = trainee.Id,
-                    FirstName = trainee.FirstName,
-                    LastName = trainee.LastName,
+                    FirstName = trainee.FullName.Split(' ')[0],
+                    LastName = trainee.FullName.Contains(" ")
+                        ? trainee.FullName.Split(' ')[1]
+                        : "",
                     Email = trainee.Email,
                     PhoneNumber = trainee.PhoneNumber,
                     University = trainee.University,
-                    Major = trainee.Major
+                    Major = trainee.Major,
+                    ResumeUrl = trainee.ResumeUrl,
+                    UserSSN = "" // إذا ما يرجع من Response
                 }
             };
 
             var options = new DialogOptions
             {
                 CloseButton = true,
-                MaxWidth = MaxWidth.Small,
-                FullWidth = true
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small
             };
 
             var dialog = await DialogService.ShowAsync<TraineeEditForm>(
-                "تعديل بيانات المتدرب",
+                "تعديل المتدرب",
                 parameters,
-                options
-            );
+                options);
 
             var result = await dialog.Result;
 
-            if (!result.Canceled && result.Data is TraineeDto updatedModel)
+            if (!result.Canceled && result.Data is TraineeCreateDto model)
             {
-                await UpdateTrainee(updatedModel);
+                await UpdateTrainee(trainee.Id, model);
             }
         }
 
-        private async Task UpdateTrainee(TraineeDto model)
+        private async Task UpdateTrainee(Guid id, TraineeCreateDto model)
         {
             try
             {
                 Loader.Show();
 
-                var apiResult = await Api.SendRequestAsync<TraineeDto, Result<bool>>(
+                var request = new
+                {
+                    Id = id,
+                    model.FirstName,
+                    model.LastName,
+                    model.Email,
+                    model.PhoneNumber,
+                    model.University,
+                    model.Major,
+                    model.ResumeUrl,
+                    model.UserSSN
+                };
+
+                var apiResult = await Api.SendRequestAsync<object, Result<TraineeResponse>>(
                     MyHttpMethod.PUT,
                     ApiEndpoints.Trainees.Update,
-                    model);
+                    request);
 
                 if (apiResult.IsSuccess && apiResult.Data?.IsSuccess == true)
                 {
-                    Snackbar.Add("تم تحديث البيانات بنجاح", Severity.Success);
+                    Snackbar.Add("تم التحديث بنجاح", Severity.Success);
                     await LoadTrainees();
                 }
                 else
@@ -178,7 +196,7 @@ namespace WebClient.Pages.Trainees
             }
             catch (Exception ex)
             {
-                Snackbar.Add($"خطأ: {ex.Message}", Severity.Error);
+                Snackbar.Add(ex.Message, Severity.Error);
             }
             finally
             {
@@ -189,7 +207,7 @@ namespace WebClient.Pages.Trainees
         // =========================
         // FILTER
         // =========================
-        private bool FilterFunc(TraineeDto e)
+        private bool FilterFunc(TraineeResponse e)
         {
             if (string.IsNullOrWhiteSpace(_searchString))
                 return true;
@@ -205,6 +223,19 @@ namespace WebClient.Pages.Trainees
         public void Dispose()
         {
             Api?.DisposeEvent();
+        }
+
+        private string GetInitials(string fullName)
+        {
+            if (string.IsNullOrWhiteSpace(fullName))
+                return "?";
+
+            var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 1)
+                return parts[0][0].ToString().ToUpper();
+
+            return $"{parts[0][0]}{parts[1][0]}".ToUpper();
         }
     }
 }

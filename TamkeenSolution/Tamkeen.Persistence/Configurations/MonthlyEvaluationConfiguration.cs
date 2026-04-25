@@ -16,13 +16,12 @@ namespace Tamkeen.Persistence.Configurations
             builder.Property(x => x.Comments)
                 .HasMaxLength(1000);
 
-            // إعداد العلاقة: الطلب الواحد (للمتدرب المقبول) له سجل تقييمات شهرية
             builder.HasOne(x => x.TrainingApplication)
                 .WithMany(x => x.MonthlyEvaluations)
                 .HasForeignKey(x => x.TrainingApplicationId)
                 .OnDelete(DeleteBehavior.Cascade);
+            // ✔ OK لأنها مرتبطة مباشرة بالطلب
 
-            // إضافة قيد للتأكد من عدم تكرار التقييم لنفس الشهر والسنة لنفس الطلب
             builder.HasIndex(x => new { x.TrainingApplicationId, x.Month, x.Year })
                 .IsUnique();
         }

@@ -22,7 +22,55 @@ namespace Tamkeen.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Tamkeen.Domain.Entities.Interview", b =>
+            modelBuilder.Entity("Tamkeen.Domain.Entities.Evaluations.MonthlyEvaluation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AttendanceGrade")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comments")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PerformanceGrade")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TrainingApplicationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrainingApplicationId", "Month", "Year")
+                        .IsUnique();
+
+                    b.ToTable("MonthlyEvaluations");
+                });
+
+            modelBuilder.Entity("Tamkeen.Domain.Entities.Interview.Interview", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,55 +123,7 @@ namespace Tamkeen.Persistence.Migrations
                     b.ToTable("Interviews");
                 });
 
-            modelBuilder.Entity("Tamkeen.Domain.Entities.MonthlyEvaluation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("AttendanceGrade")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Comments")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PerformanceGrade")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("TrainingApplicationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrainingApplicationId", "Month", "Year")
-                        .IsUnique();
-
-                    b.ToTable("MonthlyEvaluations");
-                });
-
-            modelBuilder.Entity("Tamkeen.Domain.Entities.Trainee", b =>
+            modelBuilder.Entity("Tamkeen.Domain.Entities.Trainee.Trainee", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -179,6 +179,11 @@ namespace Tamkeen.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("UserSSN")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -187,7 +192,7 @@ namespace Tamkeen.Persistence.Migrations
                     b.ToTable("Trainees");
                 });
 
-            modelBuilder.Entity("Tamkeen.Domain.Entities.TrainingApplication", b =>
+            modelBuilder.Entity("Tamkeen.Domain.Entities.Trainee.TrainingApplication", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -230,7 +235,7 @@ namespace Tamkeen.Persistence.Migrations
                     b.ToTable("TrainingApplications");
                 });
 
-            modelBuilder.Entity("Tamkeen.Domain.Entities.TrainingProgram", b =>
+            modelBuilder.Entity("Tamkeen.Domain.Entities.Trainee.TrainingProgram", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -288,20 +293,9 @@ namespace Tamkeen.Persistence.Migrations
                     b.ToTable("TrainingPrograms");
                 });
 
-            modelBuilder.Entity("Tamkeen.Domain.Entities.Interview", b =>
+            modelBuilder.Entity("Tamkeen.Domain.Entities.Evaluations.MonthlyEvaluation", b =>
                 {
-                    b.HasOne("Tamkeen.Domain.Entities.TrainingApplication", "TrainingApplication")
-                        .WithMany("Interviews")
-                        .HasForeignKey("TrainingApplicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TrainingApplication");
-                });
-
-            modelBuilder.Entity("Tamkeen.Domain.Entities.MonthlyEvaluation", b =>
-                {
-                    b.HasOne("Tamkeen.Domain.Entities.TrainingApplication", "TrainingApplication")
+                    b.HasOne("Tamkeen.Domain.Entities.Trainee.TrainingApplication", "TrainingApplication")
                         .WithMany("MonthlyEvaluations")
                         .HasForeignKey("TrainingApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -310,15 +304,26 @@ namespace Tamkeen.Persistence.Migrations
                     b.Navigation("TrainingApplication");
                 });
 
-            modelBuilder.Entity("Tamkeen.Domain.Entities.TrainingApplication", b =>
+            modelBuilder.Entity("Tamkeen.Domain.Entities.Interview.Interview", b =>
                 {
-                    b.HasOne("Tamkeen.Domain.Entities.Trainee", "Trainee")
-                        .WithMany("AppliedPrograms")
-                        .HasForeignKey("TraineeId")
+                    b.HasOne("Tamkeen.Domain.Entities.Trainee.TrainingApplication", "TrainingApplication")
+                        .WithMany("Interviews")
+                        .HasForeignKey("TrainingApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Tamkeen.Domain.Entities.TrainingProgram", "TrainingProgram")
+                    b.Navigation("TrainingApplication");
+                });
+
+            modelBuilder.Entity("Tamkeen.Domain.Entities.Trainee.TrainingApplication", b =>
+                {
+                    b.HasOne("Tamkeen.Domain.Entities.Trainee.Trainee", "Trainee")
+                        .WithMany("Applications")
+                        .HasForeignKey("TraineeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Tamkeen.Domain.Entities.Trainee.TrainingProgram", "TrainingProgram")
                         .WithMany("Applications")
                         .HasForeignKey("TrainingProgramId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -329,19 +334,19 @@ namespace Tamkeen.Persistence.Migrations
                     b.Navigation("TrainingProgram");
                 });
 
-            modelBuilder.Entity("Tamkeen.Domain.Entities.Trainee", b =>
+            modelBuilder.Entity("Tamkeen.Domain.Entities.Trainee.Trainee", b =>
                 {
-                    b.Navigation("AppliedPrograms");
+                    b.Navigation("Applications");
                 });
 
-            modelBuilder.Entity("Tamkeen.Domain.Entities.TrainingApplication", b =>
+            modelBuilder.Entity("Tamkeen.Domain.Entities.Trainee.TrainingApplication", b =>
                 {
                     b.Navigation("Interviews");
 
                     b.Navigation("MonthlyEvaluations");
                 });
 
-            modelBuilder.Entity("Tamkeen.Domain.Entities.TrainingProgram", b =>
+            modelBuilder.Entity("Tamkeen.Domain.Entities.Trainee.TrainingProgram", b =>
                 {
                     b.Navigation("Applications");
                 });

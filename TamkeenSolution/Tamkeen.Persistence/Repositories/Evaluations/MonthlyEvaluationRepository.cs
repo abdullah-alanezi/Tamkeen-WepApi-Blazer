@@ -1,60 +1,68 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Tamkeen.Application.Interfaces.Evaluations;
-using Tamkeen.Core.Models.DTOs;
+using Tamkeen.Core.Models.MonthlyEvaluation.Request;
+using Tamkeen.Core.Models.MonthlyEvaluation.Response;
 using Tamkeen.Domain.Entities.Evaluations;
 using Tamkeen.Persistence.Repositories.Generic;
+
 namespace Tamkeen.Persistence.Repositories.Evaluations
 {
-    public class MonthlyEvaluationRepository : GenericRepository<MonthlyEvaluation>, IMonthlyEvaluationRepository
+    public class MonthlyEvaluationRepository
+        : GenericRepository<MonthlyEvaluation>, IMonthlyEvaluationRepository
     {
         private readonly IMapper _mapper;
-        public MonthlyEvaluationRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext,mapper) {
-        
+
+        public MonthlyEvaluationRepository(ApplicationDbContext dbContext, IMapper mapper)
+            : base(dbContext, mapper)
+        {
             _mapper = mapper;
         }
 
-        public async Task<bool> CreateEvaluationAsync(MonthlyEvaluationDto entity)
+        // 🟢 CREATE
+        public async Task<MonthlyEvaluationResponse> CreateAsync(MonthlyEvaluationCreateDto dto)
         {
-            var dbInsert = _mapper.Map<MonthlyEvaluation>(entity);
-            await AddAsync(dbInsert);
+            var entity = _mapper.Map<MonthlyEvaluation>(dto);
+
+            await AddAsync(entity);
             await SaveChangesAsync();
 
-            return true;
+            return _mapper.Map<MonthlyEvaluationResponse>(entity);
         }
 
-        public async Task<MonthlyEvaluationDto?> GetEvaluationByIdAsync(Guid id)
+        // 🔵 GET BY ID
+        public async Task<MonthlyEvaluationResponse?> GetByIdAsync(Guid id)
         {
-            var dbResult = await FirstOrDefaultAsync(x => x.Id == id);
+            var entity = await FirstOrDefaultAsync(x => x.Id == id);
 
-            var response = _mapper.Map<MonthlyEvaluationDto>(dbResult);
-            
-            return response;
+            return entity == null
+                ? null
+                : _mapper.Map<MonthlyEvaluationResponse>(entity);
         }
 
-        public async Task<bool> UpdateEvaluationAsync(MonthlyEvaluationDto entity)
+        // 🟣 GET ALL
+        public async Task<List<MonthlyEvaluationResponse>> GetAllAsync()
         {
-            var dbInsert = _mapper.Map<MonthlyEvaluation>(entity);
+            return await GetAllAsync<MonthlyEvaluationResponse>();
+        }
 
-            await UpdateAsync(dbInsert);
+        // 🟡 UPDATE
+        public async Task<MonthlyEvaluationResponse> UpdateAsync(MonthlyEvaluationCreateDto dto)
+        {
+            var entity = await FirstOrDefaultAsync(x => x.Id == dto.Id);
 
+            if (entity == null)
+                throw new Exception("Evaluation not found");
+
+            entity.Month = dto.Month;
+            entity.Year = dto.Year;
+            entity.AttendanceGrade = dto.AttendanceGrade;
+            entity.PerformanceGrade = dto.PerformanceGrade;
+            entity.Comments = dto.Comments;
+
+            await UpdateAsync(entity);
             await SaveChangesAsync();
 
-            return true;
-        }
-
-        
-       
-
-        public async Task<List<MonthlyEvaluationDto>> GetAllEvaluationsAsync()
-        {
-            var respons = await GetAllAsync<MonthlyEvaluationDto>(whereCondition: null);
-
-            //return respons;
-
-            return respons;
+            return _mapper.Map<MonthlyEvaluationResponse>(entity);
         }
     }
 }

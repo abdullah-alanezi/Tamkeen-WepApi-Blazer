@@ -28,11 +28,14 @@ namespace Tamkeen.Persistence.Configurations
             builder.Property(x => x.Requirements)
                 .HasMaxLength(2000);
 
-            // إعداد العلاقة: البرنامج لديه طلبات تقديم كثيرة
             builder.HasMany(x => x.Applications)
                 .WithOne(x => x.TrainingProgram)
                 .HasForeignKey(x => x.TrainingProgramId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // 🔥 تحسين مهم جداً
+            builder.Property(x => x.Status)
+                .HasConversion<int>(); // optional لكن مهم للثبات
         }
     }
 }

@@ -2,18 +2,23 @@
 using System.Collections.Generic;
 using System.Text;
 using Tamkeen.Application.Interfaces.Generic;
-using Tamkeen.Core.Models.DTOs;
+using Tamkeen.Core.Models.Interview.Request;
+using Tamkeen.Core.Models.Interview.Response;
 using Tamkeen.Domain.Entities.Interview;
 
 namespace Tamkeen.Application.Interfaces.Interview
 {
     public interface IInterviewRepository {
 
-        Task<bool> ScheduleInterviewAsync(InterviewDto interview);
-        Task<bool> RescheduleInterviewAsync(InterviewDto interview);
-        Task<bool> CancelInterviewAsync(Guid id);
-        Task<InterviewDto?> GetInterviewByIdAsync(Guid id);
-        Task<List<InterviewDto>> GetAllInterviewsAsync();
+        Task<InterviewResponse> ScheduleAsync(InterviewCreateDto dto);
+
+        Task<InterviewResponse> RescheduleAsync(InterviewCreateDto dto);
+
+        Task<bool> CancelAsync(Guid id);
+
+        Task<InterviewResponse?> GetByIdAsync(Guid id);
+
+        Task<List<InterviewResponse>> GetAllAsync();
 
     }
 }

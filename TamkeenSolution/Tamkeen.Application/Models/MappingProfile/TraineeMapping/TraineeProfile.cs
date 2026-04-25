@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Tamkeen.Application.Features.Trainees.Commands;
-using Tamkeen.Core.Models.DTOs;
+using Tamkeen.Core.Models.Trainee.Request;
+using Tamkeen.Core.Models.Trainee.Response;
 using Tamkeen.Domain.Entities.Trainee;
 
 namespace Tamkeen.Application.Models.MappingProfile.TraineeMapping
@@ -9,13 +9,19 @@ namespace Tamkeen.Application.Models.MappingProfile.TraineeMapping
     {
         public TraineeProfile()
         {
-            CreateMap<Trainee, TraineeDto>()
-                // إذا أردت دمج الاسم الأول والأخير تلقائياً في الـ DTO
-                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
-                .ReverseMap();
+            // =========================
+            // ENTITY -> RESPONSE
+            // =========================
+            CreateMap<Trainee, TraineeResponse>()
+                .ForMember(dest => dest.FullName,
+                    opt => opt.MapFrom(src => src.FirstName + " " + src.LastName));
 
-            CreateMap<TraineeDto, AddTraineeCommand>();
+            // =========================
+            // REQUEST -> ENTITY
+            // =========================
+            CreateMap<TraineeCreateDto, Trainee>();
+
+            // ❌ لا ReverseMap
         }
-
     }
 }
