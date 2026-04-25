@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Tamkeen.WebInfrastructure.Enums
 {
-    public enum HttpMethod
+    public enum MyHttpMethod
     {
         GET,
         POST,

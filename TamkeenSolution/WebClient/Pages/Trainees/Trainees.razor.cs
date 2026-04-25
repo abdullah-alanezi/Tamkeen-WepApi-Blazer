@@ -4,6 +4,7 @@ using Tamkeen.Core.Common;
 using Tamkeen.Core.Models.DTOs;
 using Tamkeen.WebInfrastructure.Constants;
 using Tamkeen.WebInfrastructure.Services;
+using Tamkeen.WebInfrastructure.Enums;
 
 namespace WebClient.Pages.Trainees
 {
@@ -16,7 +17,6 @@ namespace WebClient.Pages.Trainees
 
         private string _searchString = "";
         private List<TraineeDto> _trainees = new();
-        
         private string? _errorMessage;
 
         protected override async Task OnInitializedAsync()
@@ -24,25 +24,29 @@ namespace WebClient.Pages.Trainees
             await LoadTrainees();
         }
 
+        // =========================
+        // LOAD
+        // =========================
         private async Task LoadTrainees()
         {
             try
             {
                 Loader.Show();
-               
                 _errorMessage = null;
 
                 var apiResult = await Api.SendRequestAsync<object, Result<List<TraineeDto>>>(
-                    Tamkeen.WebInfrastructure.Enums.HttpMethod.GET,
+                    MyHttpMethod.GET,
                     ApiEndpoints.Trainees.GetAll);
 
-                if (apiResult.IsSuccess && apiResult.Data != null && apiResult.Data.IsSuccess)
+                if (apiResult.IsSuccess && apiResult.Data?.IsSuccess == true)
                 {
-                    _trainees = apiResult.Data.Data ?? new List<TraineeDto>();
+                    _trainees = apiResult.Data.Data ?? new();
                 }
                 else
                 {
-                    _errorMessage = apiResult.Data?.ErrorMessage ?? apiResult.ErrorMessage ?? "فشل تحميل البيانات";
+                    _errorMessage = apiResult.Data?.ErrorMessage
+                                    ?? apiResult.ErrorMessage
+                                    ?? "فشل تحميل البيانات";
                 }
             }
             catch (Exception ex)
@@ -51,74 +55,27 @@ namespace WebClient.Pages.Trainees
             }
             finally
             {
-                
                 Loader.Hide();
             }
         }
 
-        private async Task OpenEditDialog(TraineeDto trainee)
-        {
-            // نأخذ نسخة من البيانات لتجنب تعديل الجدول مباشرة قبل الضغط على "حفظ"
-            var parameters = new DialogParameters
-            {
-                ["Model"] = new TraineeDto
-                {
-                    Id = trainee.Id,
-                    FirstName = trainee.FirstName,
-                    LastName = trainee.LastName,
-                    Email = trainee.Email,
-                    PhoneNumber = trainee.PhoneNumber,
-                    University = trainee.University,
-                    Major = trainee.Major
-                    // أضف بقية الحقول هنا
-                }
-            };
-            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-
-            var dialog = await DialogService.ShowAsync<TraineeEditForm>("تعديل بيانات المتدرب", parameters, options);
-            var result = await dialog.Result;
-
-            if (!result.Canceled && result.Data is TraineeDto updatedModel)
-            {
-                await UpdateTrainee(updatedModel);
-            }
-        }
-
-        private async Task UpdateTrainee(TraineeDto model)
-        {
-            var apiResult = await Api.SendRequestAsync<TraineeDto, Result<bool>>(
-                Tamkeen.WebInfrastructure.Enums.HttpMethod.PUT,
-                ApiEndpoints.Trainees.Update,
-                model);
-
-            if (apiResult.IsSuccess && apiResult.Data != null && apiResult.Data.IsSuccess)
-            {
-                Snackbar.Add("تم تحديث البيانات بنجاح", Severity.Success);
-                await LoadTrainees(); // تحديث القائمة
-            }
-            else
-            {
-                Snackbar.Add(apiResult.Data?.ErrorMessage ?? "حدث خطأ أثناء التحديث", Severity.Error);
-            }
-        }
-
-        public void Dispose() => Api?.DisposeEvent();
-
-        private bool FilterFunc1(TraineeDto element) => FilterFunc(element, _searchString);
-
-        private bool FilterFunc(TraineeDto element, string searchString)
-        {
-            if (string.IsNullOrWhiteSpace(searchString)) return true;
-            return element.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
-                   element.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
-                   element.Major.Contains(searchString, StringComparison.OrdinalIgnoreCase);
-        }
-
-
+        // =========================
+        // ADD
+        // =========================
         private async Task OpenAddDialog()
         {
-            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-            var dialog = await DialogService.ShowAsync<TraineeCreateForm>("إضافة متدرب", options);
+            var options = new DialogOptions
+            {
+                CloseButton = true,
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
+            };
+
+            var dialog = await DialogService.ShowAsync<TraineeCreateForm>(
+                "إضافة متدرب",
+                options
+            );
+
             var result = await dialog.Result;
 
             if (!result.Canceled && result.Data is TraineeDto newTrainee)
@@ -131,28 +88,123 @@ namespace WebClient.Pages.Trainees
         {
             try
             {
-                // إرسال الطلب للـ API باستخدام الـ Interceptor الذي أعددته
+                Loader.Show();
+
                 var apiResult = await Api.SendRequestAsync<TraineeDto, Result<TraineeDto>>(
-                    Tamkeen.WebInfrastructure.Enums.HttpMethod.POST,
+                    MyHttpMethod.POST,
                     ApiEndpoints.Trainees.Create,
                     model);
 
-                if (apiResult.IsSuccess && apiResult.Data != null && apiResult.Data.IsSuccess)
+                if (apiResult.IsSuccess && apiResult.Data?.IsSuccess == true)
                 {
                     Snackbar.Add("تمت إضافة المتدرب بنجاح", Severity.Success);
-                    await LoadTrainees(); // إعادة تحميل الجدول
+                    await LoadTrainees();
                 }
                 else
                 {
-                    Snackbar.Add(apiResult.Data?.ErrorMessage ?? "فشل في عملية الإضافة", Severity.Error);
+                    Snackbar.Add(apiResult.Data?.ErrorMessage ?? "فشل الإضافة", Severity.Error);
                 }
             }
             catch (Exception ex)
             {
                 Snackbar.Add($"خطأ: {ex.Message}", Severity.Error);
             }
+            finally
+            {
+                Loader.Hide();
+            }
+        }
+
+        // =========================
+        // EDIT
+        // =========================
+        private async Task OpenEditDialog(TraineeDto trainee)
+        {
+            var parameters = new DialogParameters
+            {
+                ["Model"] = new TraineeDto
+                {
+                    Id = trainee.Id,
+                    FirstName = trainee.FirstName,
+                    LastName = trainee.LastName,
+                    Email = trainee.Email,
+                    PhoneNumber = trainee.PhoneNumber,
+                    University = trainee.University,
+                    Major = trainee.Major
+                }
+            };
+
+            var options = new DialogOptions
+            {
+                CloseButton = true,
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
+            };
+
+            var dialog = await DialogService.ShowAsync<TraineeEditForm>(
+                "تعديل بيانات المتدرب",
+                parameters,
+                options
+            );
+
+            var result = await dialog.Result;
+
+            if (!result.Canceled && result.Data is TraineeDto updatedModel)
+            {
+                await UpdateTrainee(updatedModel);
+            }
+        }
+
+        private async Task UpdateTrainee(TraineeDto model)
+        {
+            try
+            {
+                Loader.Show();
+
+                var apiResult = await Api.SendRequestAsync<TraineeDto, Result<bool>>(
+                    MyHttpMethod.PUT,
+                    ApiEndpoints.Trainees.Update,
+                    model);
+
+                if (apiResult.IsSuccess && apiResult.Data?.IsSuccess == true)
+                {
+                    Snackbar.Add("تم تحديث البيانات بنجاح", Severity.Success);
+                    await LoadTrainees();
+                }
+                else
+                {
+                    Snackbar.Add(apiResult.Data?.ErrorMessage ?? "فشل التحديث", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"خطأ: {ex.Message}", Severity.Error);
+            }
+            finally
+            {
+                Loader.Hide();
+            }
+        }
+
+        // =========================
+        // FILTER
+        // =========================
+        private bool FilterFunc(TraineeDto e)
+        {
+            if (string.IsNullOrWhiteSpace(_searchString))
+                return true;
+
+            return e.FullName.Contains(_searchString, StringComparison.OrdinalIgnoreCase)
+                || e.Email.Contains(_searchString, StringComparison.OrdinalIgnoreCase)
+                || e.Major.Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // =========================
+        // DISPOSE
+        // =========================
+        public void Dispose()
+        {
+            Api?.DisposeEvent();
         }
     }
-
-
 }

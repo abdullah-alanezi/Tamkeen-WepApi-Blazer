@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Tamkeen.Application.Features.Trainees.Commands;
@@ -12,10 +13,11 @@ namespace Tamkeen.WebApi.Controllers.Trainee
     public class TraineesController : ControllerBase // الـ API يرث من ControllerBase وليس Controller
     {
         private readonly IMediator _mediator;
-
-        public TraineesController(IMediator mediator)
+        private readonly IMapper _mapper; // تأكد من إضافة الـ IMapper إذا كنت تستخدم AutoMapper
+        public TraineesController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -39,7 +41,7 @@ namespace Tamkeen.WebApi.Controllers.Trainee
         [HttpPost]
         public async Task<IActionResult> AddTrainee(TraineeDto trainee)
         {
-            var command = new AddTraineeCommand(trainee);
+            var command = _mapper.Map<AddTraineeCommand>(trainee);
 
             var result = await _mediator.Send(command);
 

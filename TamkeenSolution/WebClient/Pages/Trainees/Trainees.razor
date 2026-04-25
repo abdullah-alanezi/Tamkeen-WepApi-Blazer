@@ -1,32 +1,54 @@
 ﻿@page "/trainees"
 @namespace WebClient.Pages.Trainees
 @layout WebClient.Layout.MainLayout
+@using Tamkeen.Core.Models.DTOs
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
+
     <MudStack Spacing="4">
-        @* 1. Header Section (خارج الجدول تماماً) *@
-        <MudPaper Elevation="3" Class="pa-4" Style="border-radius: 12px; background: linear-gradient(90deg, #594AE2 0%, #7467EF 100%); color: white;">
-            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+
+        <!-- ================= HEADER ================= -->
+        <MudPaper Elevation="3" Class="pa-4"
+                  Style="border-radius:12px;
+                         background:linear-gradient(90deg,#594AE2 0%,#7467EF 100%);
+                         color:white;">
+
+            <MudStack Row="true"
+                      AlignItems="AlignItems.Center"
+                      Justify="Justify.SpaceBetween">
+
                 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
                     <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
-                    <MudText Typo="Typo.h4" Style="font-weight: 700;">قائمة المتدربين</MudText>
+                    <MudText Typo="Typo.h4" Style="font-weight:700;">
+                        قائمة المتدربين
+                    </MudText>
                 </MudStack>
-                <MudChip T="string" Color="Color.Surface" Variant="Variant.Filled" Size="Size.Large">إجمالي العدد: @_trainees.Count</MudChip>
+
+                <!-- ✅ FIX: MudChip requires T -->
+                <MudChip T="string"
+                         Color="Color.Surface"
+                         Variant="Variant.Filled"
+                         Size="Size.Large">
+                    إجمالي العدد: @_trainees.Count
+                </MudChip>
+
             </MudStack>
         </MudPaper>
 
-        @* 2. Main Table *@
+        <!-- ================= TABLE ================= -->
         <MudTable Items="@_trainees"
                   T="TraineeDto"
                   Hover="true"
                   Striped="true"
-                  
                   Elevation="4"
-                  Filter="new Func<TraineeDto,bool>(FilterFunc1)"
+                  Filter="FilterFunc"
                   Class="rounded-lg">
 
+            <!-- TOOLBAR -->
             <ToolBarContent>
+
                 <MudText Typo="Typo.h6">المتدربون</MudText>
+
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
                            StartIcon="@Icons.Material.Filled.Add"
@@ -34,76 +56,114 @@
                            Class="ms-4">
                     إضافة متدرب
                 </MudButton>
+
                 <MudSpacer />
+
                 <MudTextField @bind-Value="_searchString"
                               Placeholder="بحث عن متدرب..."
                               Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search"
-                              IconSize="Size.Medium"
-                              Class="mt-0"
                               Clearable="true" />
+
             </ToolBarContent>
 
+            <!-- HEADER -->
             <HeaderContent>
-                <MudTh><MudTableSortLabel SortBy="new Func<TraineeDto, object>(x => x.FirstName)">الاسم الكامل</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<TraineeDto, object>(x => x.Email)">البريد الإلكتروني</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<TraineeDto, object>(x => x.Major)">التخصص</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<TraineeDto, object>(x => x.University)">الجامعة</MudTableSortLabel></MudTh>
+                <MudTh>الاسم الكامل</MudTh>
+                <MudTh>البريد الإلكتروني</MudTh>
+                <MudTh>التخصص</MudTh>
+                <MudTh>الجامعة</MudTh>
                 <MudTh Style="text-align:right">الإجراءات</MudTh>
             </HeaderContent>
 
+            <!-- ROW -->
             <RowTemplate>
+
                 <MudTd DataLabel="Name">
                     <MudStack Row="true" AlignItems="AlignItems.Center">
+
                         <MudAvatar Color="Color.Primary" Variant="Variant.Filled">
-                            @context.FirstName.FirstOrDefault()
+                            @context.FirstName?.FirstOrDefault()
                         </MudAvatar>
+
                         <MudStack Spacing="0">
-                            <MudText Typo="Typo.body1" Style="font-weight: 600;">@context.FullName</MudText>
-                            <MudText Typo="Typo.caption" Color="Color.Secondary">ID: @context.Id.ToString().Substring(0, 8)</MudText>
+                            <MudText Style="font-weight:600;">
+                                @context.FullName
+                            </MudText>
+
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                ID: @context.Id
+                            </MudText>
                         </MudStack>
+
                     </MudStack>
                 </MudTd>
-                <MudTd DataLabel="Email">
-                    <MudLink Href="@($"mailto:{context.Email}")" Underline="Underline.Hover" Color="Color.Info">
+
+                <MudTd>
+                    <MudLink Href="@($"mailto:{context.Email}")"
+                             Color="Color.Info"
+                             Underline="Underline.Hover">
                         @context.Email
                     </MudLink>
                 </MudTd>
-                <MudTd DataLabel="Major">
-                    <MudChip T="string" Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined">
+
+                <!-- ✅ FIX: MudChip -->
+                <MudTd>
+                    <MudChip T="string"
+                             Size="Size.Small"
+                             Color="Color.Primary"
+                             Variant="Variant.Outlined">
                         @context.Major
                     </MudChip>
                 </MudTd>
-                <MudTd DataLabel="University">@context.University</MudTd>
-                <MudTd DataLabel="Actions" Style="text-align:right">
+
+                <MudTd>@context.University</MudTd>
+
+                <MudTd Style="text-align:right">
+
                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                   Color="Color.Default"
+                                   Color="Color.Primary"
                                    Size="Size.Small"
                                    OnClick="@(() => OpenEditDialog(context))" />
-                    <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Info" Size="Size.Small" />
+
+                    <MudIconButton Icon="@Icons.Material.Filled.Visibility"
+                                   Color="Color.Info"
+                                   Size="Size.Small" />
+
                 </MudTd>
+
             </RowTemplate>
 
-            @* ملاحظة: NoRecordsContent بدلاً من NoItemsTemplate في بعض الإصدارات *@
+            <!-- NO DATA -->
             <NoRecordsContent>
-                <MudText Align="Align.Center" Class="pa-4">لا توجد سجلات مطابقة للبحث</MudText>
+                <MudText Align="Align.Center" Class="pa-4">
+                    لا توجد سجلات مطابقة للبحث
+                </MudText>
             </NoRecordsContent>
 
+            <!-- LOADING -->
             <LoadingContent>
-                <MudText Align="Align.Center" Class="pa-4">جاري التحميل...</MudText>
+                <MudText Align="Align.Center" Class="pa-4">
+                    جاري التحميل...
+                </MudText>
             </LoadingContent>
 
+            <!-- PAGING -->
             <PagerContent>
-                <MudTablePager InfoFormat="عرض {first_item}-{last_item} من أصل {all_items}" RowsPerPageString="عدد الصفوف:" />
+                <MudTablePager RowsPerPageString="عدد الصفوف:" />
             </PagerContent>
+
         </MudTable>
 
-        @* 3. Error Alerts (خارج الجدول تماماً) *@
+        <!-- ================= ERROR ================= -->
         @if (!string.IsNullOrEmpty(_errorMessage))
         {
-            <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Class="mt-4">
+            <MudAlert Severity="Severity.Error"
+                      Variant="Variant.Filled"
+                      Class="mt-4">
                 @_errorMessage
             </MudAlert>
         }
+
     </MudStack>
 </MudContainer>

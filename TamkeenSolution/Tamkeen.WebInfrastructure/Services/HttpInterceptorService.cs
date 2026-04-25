@@ -5,7 +5,7 @@ using Tamkeen.Core.Common;
 using Tamkeen.WebInfrastructure.Enums;
 using Toolbelt.Blazor;
 
-using MyHttpMethod = Tamkeen.WebInfrastructure.Enums.HttpMethod;
+using MyHttpMethod = Tamkeen.WebInfrastructure.Enums.MyHttpMethod;
 namespace Tamkeen.WebInfrastructure.Services
 {
     public class HttpInterceptorService
