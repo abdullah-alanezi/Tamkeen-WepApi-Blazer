@@ -1,13 +1,10 @@
 ﻿@page "/trainees"
-
 @layout WebClient.Layout.MainLayout
 @using Tamkeen.Core.Models.Trainee.Response
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
-
     <MudStack Spacing="4">
 
-        <!-- ================= HEADER ================= -->
         <MudPaper Elevation="3" Class="pa-4"
                   Style="border-radius:12px;
                          background:linear-gradient(90deg,#594AE2 0%,#7467EF 100%);
@@ -24,17 +21,16 @@
                     </MudText>
                 </MudStack>
 
-                <MudChip T="int"
+                <MudChip T="string"
                          Color="Color.Surface"
                          Variant="Variant.Filled"
                          Size="Size.Large">
-                    إجمالي العدد: @_trainees?.Count ?? 0
+                    إجمالي العدد: @(_trainees?.Count ?? 0)
                 </MudChip>
 
             </MudStack>
         </MudPaper>
 
-        <!-- ================= TABLE ================= -->
         <MudTable Items="@_trainees"
                   T="TraineeResponse"
                   Hover="true"
@@ -43,9 +39,7 @@
                   Filter="FilterFunc"
                   Class="rounded-lg">
 
-            <!-- TOOLBAR -->
             <ToolBarContent>
-
                 <MudText Typo="Typo.h6">المتدربون</MudText>
 
                 <MudButton Variant="Variant.Filled"
@@ -62,11 +56,10 @@
                               Placeholder="بحث..."
                               Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search"
-                              Clearable="true" />
-
+                              Clearable="true"
+                              Immediate="true" />
             </ToolBarContent>
 
-            <!-- HEADER -->
             <HeaderContent>
                 <MudTh>الاسم الكامل</MudTh>
                 <MudTh>البريد الإلكتروني</MudTh>
@@ -75,30 +68,22 @@
                 <MudTh Style="text-align:right">الإجراءات</MudTh>
             </HeaderContent>
 
-            <!-- ROW -->
             <RowTemplate>
-
-                <MudTd DataLabel="Name">
+                <MudTd DataLabel="الاسم">
                     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-
                         <MudAvatar Color="Color.Primary" Variant="Variant.Filled">
                             @GetInitials(context.FullName)
                         </MudAvatar>
-
                         <MudStack Spacing="0">
                             <MudText Style="font-weight:600;">
                                 @context.FullName
                             </MudText>
 
-                            <MudText Typo="Typo.caption" Color="Color.Secondary">
-                                ID: @context.Id
-                            </MudText>
                         </MudStack>
-
                     </MudStack>
                 </MudTd>
 
-                <MudTd>
+                <MudTd DataLabel="البريد">
                     <MudLink Href="@($"mailto:{context.Email}")"
                              Color="Color.Info"
                              Underline="Underline.Hover">
@@ -106,7 +91,7 @@
                     </MudLink>
                 </MudTd>
 
-                <MudTd>
+                <MudTd DataLabel="التخصص">
                     <MudChip T="string"
                              Size="Size.Small"
                              Color="Color.Primary"
@@ -115,44 +100,40 @@
                     </MudChip>
                 </MudTd>
 
-                <MudTd>@context.University</MudTd>
+                <MudTd DataLabel="الجامعة">@context.University</MudTd>
 
                 <MudTd Style="text-align:right">
-
                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                    Color="Color.Primary"
                                    Size="Size.Small"
                                    OnClick="@(() => OpenEditDialog(context))" />
-
                 </MudTd>
-
             </RowTemplate>
 
-            <!-- EMPTY -->
             <NoRecordsContent>
                 <MudText Align="Align.Center" Class="pa-4">
-                    لا توجد بيانات
+                    لا توجد بيانات لعرضها حالياً
                 </MudText>
             </NoRecordsContent>
 
-            <!-- LOADING -->
             <LoadingContent>
                 <MudText Align="Align.Center" Class="pa-4">
-                    جاري التحميل...
+                    جاري جلب البيانات من الخادم...
                 </MudText>
             </LoadingContent>
 
-            <!-- PAGING -->
             <PagerContent>
-                <MudTablePager RowsPerPageString="عدد الصفوف:" />
+                <MudTablePager RowsPerPageString="عدد الصفوف في الصفحة:" />
             </PagerContent>
-
         </MudTable>
 
-        <!-- ================= ERROR ================= -->
         @if (!string.IsNullOrEmpty(_errorMessage))
         {
-            <MudAlert Severity="Severity.Error" Variant="Variant.Filled">
+            <MudAlert Severity="Severity.Error"
+                      Variant="Variant.Filled"
+                      Elevation="2"
+                      OnClose="@(() => _errorMessage = null)"
+                      Class="mt-2">
                 @_errorMessage
             </MudAlert>
         }

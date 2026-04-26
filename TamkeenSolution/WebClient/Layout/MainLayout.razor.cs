@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Tamkeen.WebInfrastructure.Services;
+using Tamkeen.WebInfrastructure.Http; // التوجيه الجديد للـ Interceptor
 
 namespace WebClient.Layout
 {
     public partial class MainLayout : LayoutComponentBase, IDisposable
     {
-        [Inject] private HttpInterceptorService Interceptor { get; set; } = null!;
+        // نستخدم الـ Interceptor الجديد (إذا كنت تريد مراقبة شيء ما، وإلا يمكن حذفه من هنا تماماً)
+        [Inject] private HTTPClientInterceptor Interceptor { get; set; } = null!;
         [Inject] private LoadingService LoaderService { get; set; } = null!;
 
         protected bool _drawerOpen = true;
@@ -15,10 +17,9 @@ namespace WebClient.Layout
 
         protected override void OnInitialized()
         {
-            // تسجيل أحداث الـ Interceptor الخاصة بك
-            Interceptor.RegisterEvent();
+            // ✅ لاحظ: حذفنا Interceptor.RegisterEvent() لأن النظام الجديد يعمل تلقائياً عبر الـ Channel
 
-            // الربط مع خدمة التحميل (اللودر)
+            // الربط مع خدمة التحميل (اللودر) يبقى كما هو لأنه يراقب حالة الـ Requests
             LoaderService.OnShow += HandleShowLoader;
             LoaderService.OnHide += HandleHideLoader;
         }
@@ -43,8 +44,8 @@ namespace WebClient.Layout
 
         public void Dispose()
         {
-            // تنظيف الأحداث عند الخروج
-            Interceptor.DisposeEvent();
+            // ✅ حذفنا Interceptor.DisposeEvent() 
+            // التنظيف يقتصر على أحداث اللودر فقط
             LoaderService.OnShow -= HandleShowLoader;
             LoaderService.OnHide -= HandleHideLoader;
         }

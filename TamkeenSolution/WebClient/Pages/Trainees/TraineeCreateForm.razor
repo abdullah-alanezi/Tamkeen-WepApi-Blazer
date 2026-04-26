@@ -1,5 +1,5 @@
-﻿
-@using Tamkeen.Core.Models.Trainee.Request
+﻿@using Tamkeen.Core.Models.Trainee.Request
+@using MudBlazor
 
 <MudDialog>
     <TitleContent>
@@ -11,64 +11,41 @@
 
     <DialogContent>
         <MudForm @ref="_form">
-
             <MudGrid Spacing="2">
-
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="Model.FirstName"
-                                  Label="الاسم الأول"
-                                  Required="true" />
+                    <MudTextField @bind-Value="Model.FirstName" Label="الاسم الأول" Required="true" RequiredError="الاسم الأول مطلوب" />
                 </MudItem>
-
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="Model.LastName"
-                                  Label="الاسم الأخير"
-                                  Required="true" />
+                    <MudTextField @bind-Value="Model.LastName" Label="الاسم الأخير" Required="true" RequiredError="الاسم الأخير مطلوب" />
                 </MudItem>
-
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="Model.Email"
-                                  Label="البريد الإلكتروني"
-                                  InputType="InputType.Email"
-                                  Required="true" />
+                    <MudTextField @bind-Value="Model.Email" Label="البريد الإلكتروني" InputType="InputType.Email" Required="true" RequiredError="البريد الإلكتروني مطلوب" />
                 </MudItem>
-
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="Model.PhoneNumber"
-                                  Label="رقم الجوال" />
+                    <MudTextField @bind-Value="Model.PhoneNumber" Label="رقم الجوال" />
                 </MudItem>
-
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="Model.University"
-                                  Label="الجامعة" />
+                    <MudTextField @bind-Value="Model.University" Label="الجامعة" />
                 </MudItem>
-
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="Model.Major"
-                                  Label="التخصص" />
+                    <MudTextField @bind-Value="Model.Major" Label="التخصص" />
                 </MudItem>
-
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="Model.UserSSN"
-                                  Label="رقم الهوية (SSN)"
-                                  Required="true" />
+                    <MudTextField @bind-Value="Model.UserSSN" Label="رقم الهوية (SSN)" Required="true" RequiredError="رقم الهوية مطلوب" />
                 </MudItem>
-
             </MudGrid>
-
         </MudForm>
     </DialogContent>
 
     <DialogActions>
         <MudButton OnClick="Cancel">إلغاء</MudButton>
-        <MudButton Color="Color.Success" OnClick="Submit">إضافة</MudButton>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="Submit">إضافة</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
-
-    private TraineeCreateDto Model { get; set; } = new();
+    [Parameter] public TraineeCreateDto Model { get; set; } = new();
     private MudForm _form = default!;
 
     private void Cancel() => MudDialog.Cancel();
@@ -76,7 +53,6 @@
     private async Task Submit()
     {
         await _form.Validate();
-
         if (_form.IsValid)
             MudDialog.Close(DialogResult.Ok(Model));
     }
