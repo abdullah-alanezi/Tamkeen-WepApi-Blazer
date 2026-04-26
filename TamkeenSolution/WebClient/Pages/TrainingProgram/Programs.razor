@@ -1,0 +1,69 @@
+﻿@page "/Programs"
+@layout WebClient.Layout.MainLayout
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-6">
+
+    <!-- Header -->
+    <MudPaper Class="pa-4 mb-4 d-flex justify-space-between align-center" Elevation="2">
+        <MudText Typo="Typo.h5" Class="fw-bold">📚 البرامج التدريبية</MudText>
+
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Add"
+                   OnClick="AddProgram">
+            إضافة برنامج
+        </MudButton>
+    </MudPaper>
+
+    <!-- Table -->
+    <MudPaper Elevation="3" Class="pa-3">
+
+        <MudTable Items="_programs"
+                  Hover="true"
+                  Bordered="true"
+                  Striped="true"
+                  Dense="true">
+
+            <HeaderContent>
+                <MudTh>العنوان</MudTh>
+                <MudTh>القسم</MudTh>
+                <MudTh>عدد المتقدمين</MudTh>
+                <MudTh>السعة</MudTh>
+                <MudTh>تاريخ البداية</MudTh>
+                <MudTh>تاريخ النهاية</MudTh>
+                <MudTh>الحالة</MudTh>
+                <MudTh Class="text-center">الإجراءات</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd>@context.Title</MudTd>
+                <MudTd>@context.Department</MudTd>
+                <MudTd>@context.ApplicationsCount</MudTd>
+                <MudTd>@context.Capacity</MudTd>
+
+                <MudTd>@context.StartDate.ToString("yyyy/MM/dd")</MudTd>
+                <MudTd>@context.EndDate.ToString("yyyy/MM/dd")</MudTd>
+
+                <MudTd>
+                    <MudChip T="string" Color="Color.Info" Variant="Variant.Filled">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+
+                <!-- Actions -->
+                <MudTd Class="text-center">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                   Color="Color.Primary"
+                                   OnClick="() => EditProgram(context)" />
+
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                   Color="Color.Error"
+                                   OnClick="() => DeleteProgram(context)" />
+                </MudTd>
+            </RowTemplate>
+
+        </MudTable>
+
+    </MudPaper>
+
+</MudContainer>

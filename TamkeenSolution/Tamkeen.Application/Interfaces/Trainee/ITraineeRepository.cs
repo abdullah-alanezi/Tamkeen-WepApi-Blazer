@@ -10,8 +10,8 @@ namespace Tamkeen.Application.Interfaces.Trainee
 {
     public interface ITraineeRepository{
         
-        Task<TraineeResponse> AddTraineeAsync(TraineeCreateDto trainee);
-        Task<TraineeResponse> UpdateTraineeAsync(TraineeCreateDto trainee);
+        Task<TraineeResponse> AddTraineeAsync(TraineeCreateRequest trainee);
+        Task<TraineeResponse> UpdateTraineeAsync(TraineeCreateRequest trainee);
         Task<bool> DeleteTraineeAsync(Guid id);
         Task<TraineeResponse?> GetTraineeByIdAsync(Guid id);
         Task <List<TraineeResponse>> GetAllTraineesAsync();

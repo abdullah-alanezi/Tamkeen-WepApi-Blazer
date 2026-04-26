@@ -19,7 +19,7 @@ namespace Tamkeen.Persistence.Repositories.Trainee
         }
 
         // 🟢 ADD
-        public async Task<TraineeResponse> AddTraineeAsync(TraineeCreateDto dto)
+        public async Task<TraineeResponse> AddTraineeAsync(TraineeCreateRequest dto)
         {
             var entity = _mapper.Map< Tamkeen.Domain.Entities.Trainee.Trainee >(dto);
 
@@ -30,7 +30,7 @@ namespace Tamkeen.Persistence.Repositories.Trainee
         }
 
         // 🟡 UPDATE
-        public async Task<TraineeResponse> UpdateTraineeAsync(TraineeCreateDto dto)
+        public async Task<TraineeResponse> UpdateTraineeAsync(TraineeCreateRequest dto)
         {
             var entity = _mapper.Map< Tamkeen.Domain.Entities.Trainee.Trainee >(dto);
 

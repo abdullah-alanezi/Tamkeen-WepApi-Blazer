@@ -7,7 +7,7 @@ namespace Tamkeen.Application.Interfaces.Trainee
 {
     public interface ITrainingProgramRepository
     {
-        Task<TrainingProgramResponse> AddAsync(TrainingProgramCreateDto dto);
+        Task<TrainingProgramResponse> AddAsync(TrainingProgramRequest dto);
 
         Task<TrainingProgramResponse?> GetByIdAsync(Guid id);
 

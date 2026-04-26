@@ -23,7 +23,7 @@ namespace Tamkeen.Application.Models.MappingProfile.ProgramMapping
             // =========================
             // REQUEST -> ENTITY
             // =========================
-            CreateMap<TrainingProgramCreateDto, TrainingProgram>();
+            CreateMap<TrainingProgramRequest, TrainingProgram>();
 
             // ❌ لا ReverseMap
         }

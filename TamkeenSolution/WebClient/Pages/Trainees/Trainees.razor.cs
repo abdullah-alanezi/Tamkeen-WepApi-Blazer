@@ -80,14 +80,14 @@ namespace WebClient.Pages.Trainees
             var dialog = await DialogService.ShowAsync<TraineeCreateForm>("إضافة متدرب جديد", options);
             var result = await dialog.Result;
 
-            if (!result.Canceled && result.Data is TraineeCreateDto model)
+            if (!result.Canceled && result.Data is TraineeCreateRequest model)
                 await CreateTrainee(model);
         }
 
         // تم التحديث لاستخدام TraineeEditForm
         private async Task OpenEditDialog(TraineeResponse trainee)
         {
-            var model = new TraineeCreateDto
+            var model = new TraineeCreateRequest
             {
                 Id = trainee.Id,
                 Email = trainee.Email,
@@ -105,11 +105,11 @@ namespace WebClient.Pages.Trainees
             var dialog = await DialogService.ShowAsync<TraineeEditForm>("تعديل بيانات المتدرب", parameters, options);
             var result = await dialog.Result;
 
-            if (!result.Canceled && result.Data is TraineeCreateDto updatedModel)
+            if (!result.Canceled && result.Data is TraineeCreateRequest updatedModel)
                 await UpdateTrainee(trainee.Id, updatedModel);
         }
 
-        private async Task CreateTrainee(TraineeCreateDto model)
+        private async Task CreateTrainee(TraineeCreateRequest model)
         {
             try
             {
@@ -127,7 +127,7 @@ namespace WebClient.Pages.Trainees
             finally { Loader.Hide(); }
         }
 
-        private async Task UpdateTrainee(Guid id, TraineeCreateDto model)
+        private async Task UpdateTrainee(Guid id, TraineeCreateRequest model)
         {
             try
             {

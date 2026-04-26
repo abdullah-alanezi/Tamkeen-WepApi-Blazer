@@ -5,7 +5,7 @@ using Tamkeen.Core.Models.BaseDto;
 
 namespace Tamkeen.Core.Models.TrainingProgram.Request
 {
-    public class TrainingProgramCreateDto: BaseDTOs
+    public class TrainingProgramRequest: BaseDTOs
     {
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;

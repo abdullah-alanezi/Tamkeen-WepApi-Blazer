@@ -20,7 +20,7 @@ namespace Tamkeen.Persistence.Repositories.Trainee
         }
 
         // 🟢 CREATE PROGRAM
-        public async Task<TrainingProgramResponse> AddAsync(TrainingProgramCreateDto dto)
+        public async Task<TrainingProgramResponse> AddAsync(TrainingProgramRequest dto)
         {
             var entity = _mapper.Map<TrainingProgram>(dto);
 

@@ -19,7 +19,7 @@ namespace Tamkeen.Application.Models.MappingProfile.TraineeMapping
             // =========================
             // REQUEST -> ENTITY
             // =========================
-            CreateMap<TraineeCreateDto, Trainee>();
+            CreateMap<TraineeCreateRequest, Trainee>();
 
             // ❌ لا ReverseMap
         }

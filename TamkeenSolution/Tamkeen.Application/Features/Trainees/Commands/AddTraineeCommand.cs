@@ -12,7 +12,7 @@ using Tamkeen.Domain.Entities.Trainee;
 
 namespace Tamkeen.Application.Features.Trainees.Commands
 {
-    public class AddTraineeCommand : TraineeCreateDto, IRequest<Result<TraineeResponse>>
+    public class AddTraineeCommand : TraineeCreateRequest, IRequest<Result<TraineeResponse>>
     {
     }
 

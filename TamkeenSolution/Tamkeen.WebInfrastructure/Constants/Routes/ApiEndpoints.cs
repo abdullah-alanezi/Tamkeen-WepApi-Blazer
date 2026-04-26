@@ -43,7 +43,7 @@ namespace Tamkeen.WebInfrastructure.Constants.Routes
             private const string Controller = "TrainingProgram";
             private const string BasePath = $"{Base}/{Controller}";
 
-            public const string GetAll = $"{BasePath}/GetAll";
+            public const string GetAll = $"{BasePath}/GetAllPrograms";
             public const string GetById = $"{BasePath}/GetById/{{id}}"; // 🔥 أضفناها
             public const string Create = $"{BasePath}/Create";
             public const string Update = $"{BasePath}/Update";
